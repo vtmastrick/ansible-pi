@@ -1,0 +1,30 @@
+---
+# main nas pi tasks
+- name: install pre-reqs
+  include: install-pre-reqs.yml
+
+- name: set host name
+  hostname:  
+   name: pi-plex
+
+- name: install https
+  apt:
+   name: apt-transport-https
+   state: present
+
+- name: Get plex key
+  apt_key:
+   url: https://downloads.plex.tv/plex-keys/PlexSign.key
+   state: present
+
+- name: Add plex repository
+  apt_repository:
+   repo: deb https://downloads.plex.tv/repo/deb public main
+   state: present
+
+- name: update
+  apt:
+   update_cache: yes
+   name: plexmediaserver
+   state: present
+

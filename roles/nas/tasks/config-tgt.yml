@@ -1,0 +1,15 @@
+---
+- name: install packages
+  apt:
+    pkg:
+    - tgt
+    state: present
+    
+- name: Deploy tgt config.
+  copy: 
+   src: etc/tgt/conf.d/external01_iscsi.conf
+   dest: /etc/tgt/conf.d/external01_iscsi.conf
+   owner: root
+   group: root
+  notify:
+   - Start ISCSI service

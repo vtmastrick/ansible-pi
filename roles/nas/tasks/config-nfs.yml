@@ -1,0 +1,17 @@
+---
+
+- name: install packages
+  apt:
+    pkg:
+    - nfs-common
+    - nfs-kernel-server
+    state: present
+    
+- name: Deploy nfs config.
+  copy:
+   src: etc/exports
+   dest: /etc/exports
+   owner: root
+   group: root
+  notify:
+   - Restart NFS service

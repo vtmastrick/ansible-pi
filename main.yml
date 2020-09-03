@@ -1,0 +1,16 @@
+---
+#setup raspberry pi
+
+- hosts: pi-nas
+  become: yes
+  become_method: sudo
+  roles:
+#    - pi
+    - nas
+
+- hosts: pi-plex
+  become: yes
+  become_method: sudo
+  roles:
+    - plex
+   

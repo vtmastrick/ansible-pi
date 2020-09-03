@@ -1,0 +1,25 @@
+---
+- name: Start Samba service
+  service:
+    name: smbd
+    state: started
+
+- name: Restart Samba service
+  service:
+    name: smbd
+    state: restarted
+
+- name: Restart ISCSI service
+  service:
+   name: tgt
+   state: restarted
+   
+- name: Restart NetBIOS name service
+  service:
+   name: nmbd
+   state: restarted
+   
+- name: Restart NFS service
+  service:
+   name: nfs-kernel-server
+   state: restarted
