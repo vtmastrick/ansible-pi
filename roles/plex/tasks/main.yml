@@ -52,9 +52,10 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - '10.10.125.52:/srv/data/stream/tv     /mnt/pi_nas01/stream/tv     nfs ro 0 0'
-   - '10.10.125.52:/srv/data/stream/movies /mnt/pi_nas01/stream/movies nfs ro 0 0'
-   - '//pi-nas01.local/stream-tv /mnt/pi_nas01/stream/tv -o guest 0 0'
+   #- '10.10.125.52:/srv/data/stream/tv     /mnt/pi_nas01/stream/tv     nfs ro 0 0'
+   #- '10.10.125.52:/srv/data/stream/movies /mnt/pi_nas01/stream/movies nfs ro 0 0'
+   - '//pi-nas01.local/stream-tv /mnt/pi_nas01/stream/tv cifs guest,uid=1000,iocharset=utf8 0 0'
+   - '//pi-nas01.local/stream-movies /mnt/pi_nas01/stream/movies cifs guest,uid=1000,iocharset=utf8 0 0'
 
 - name: create user
   user:
