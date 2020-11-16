@@ -3,29 +3,6 @@
 - name: install pre-reqs
   include: install-pre-reqs.yml
 
-- name: set host name
-  hostname:  
-   name: pi-plex
-
-- name: change default pi password
-  user: name=pi password=$6$228438166$WZeDX53ZvFdq989jimlLwXp.twAwI10aODeEdcGiePf/j8CHk46llsQlGdfvviz1x701vpP3OWAJduiNHShk80
-
-- name: remove other localhost definitions
-  lineinfile:
-   path: /etc/hosts
-   regexp: '^127\.0\.0\.1[ \t\s]*((?!localhost\tpi-plex).)*$'
-   state: absent
-
-- name: update hosts file with hostname
-  lineinfile:
-   path: /etc/hosts
-   regexp: '^127\.0\.0\.1'
-   line: "127.0.0.1\tlocalhost\tpi-plex"
-   insertbefore: BOF
-   owner: root
-   group: root
-   mode: '0644'
-
 - name: create directories
   file:
    path: "{{ item }}"
@@ -54,14 +31,8 @@
   with_items:
    #- '10.10.125.52:/srv/data/stream/tv     /mnt/pi_nas01/stream/tv     nfs ro 0 0'
    #- '10.10.125.52:/srv/data/stream/movies /mnt/pi_nas01/stream/movies nfs ro 0 0'
-   - '//pi-nas01.local/stream-tv /mnt/pi_nas01/stream/tv cifs guest,uid=1000,iocharset=utf8 0 0'
-   - '//pi-nas01.local/stream-movies /mnt/pi_nas01/stream/movies cifs guest,uid=1000,iocharset=utf8 0 0'
-
-- name: create user
-  user:
-    name: mastrick
-    password: $6$228438166$VVSp4qoPQObdWBg5yzcCzHL02sxHmgKXPUFHQS/3N6kiNk2Tc5wKpTUq12mZvhnGFqgV58josHlphyZolYyYh/
-    update_password: on_create
+   - '//pi-nas.local/stream-tv /mnt/pi_nas01/stream/tv cifs guest,uid=1000,iocharset=utf8 0 0'
+   - '//pi-nas.local/stream-movies /mnt/pi_nas01/stream/movies cifs guest,uid=1000,iocharset=utf8 0 0'
 
 - name: install plex
   include: plex.yml

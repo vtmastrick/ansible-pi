@@ -1,5 +1,24 @@
-[pi-nas]
-10.10.125.202
-
-[pi-plex]
-10.10.125.52
+---
+all:
+  hosts:
+    pi-nas:
+      ansible_host: 10.10.125.202
+    pi-plex:
+      ansible_host: 10.10.125.215
+#    pi-dvr:
+#      ansible_host: 10.10.125.92
+  children:
+    pis:
+      hosts:
+        pi-nas:
+        pi-plex:
+#        pi-dvr:
+    pinas:
+      hosts:
+        pi-nas:
+    piplex:
+      hosts:
+        pi-plex:
+    pidvr:
+      hosts:
+        pi-dvr:

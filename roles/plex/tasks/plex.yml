@@ -1,12 +1,4 @@
 ---
-# main nas pi tasks
-- name: install pre-reqs
-  include: install-pre-reqs.yml
-
-- name: set host name
-  hostname:  
-   name: pi-plex
-
 - name: install https
   apt:
    name: apt-transport-https

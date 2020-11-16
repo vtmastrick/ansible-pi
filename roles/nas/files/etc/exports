@@ -9,4 +9,4 @@
 # /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
 #
 
-/srv/data/stream        10.10.125.0/24 *(ro,sync,no_subtree_check)
+/srv/data/stream        *(ro,sync,no_subtree_check)

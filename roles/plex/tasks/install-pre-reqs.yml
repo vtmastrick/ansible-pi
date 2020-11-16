@@ -1,14 +1,5 @@
 ---
-- apt:
-   name: aptitude
-   state: present
-
-- name: ensure os is up to date
+- name: install pre reqs
   apt:
-    update_cache: yes
-    upgrade: full
-    cache_valid_time: 300
-
-- apt:
-   name: nfs-common
+   pkg: nfs-common
    state: present

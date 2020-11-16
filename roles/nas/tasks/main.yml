@@ -3,29 +3,6 @@
 - name: install pre-reqs
   include: install-pre-reqs.yml
 
-- name: set host name
-  hostname:  
-   name: pi-nas01
-
-- name: change default pi password
-  user: name=pi password=$6$228438166$WZeDX53ZvFdq989jimlLwXp.twAwI10aODeEdcGiePf/j8CHk46llsQlGdfvviz1x701vpP3OWAJduiNHShk80
-
-- name: remove other localhost definitions
-  lineinfile:
-   path: /etc/hosts
-   regexp: '^127\.0\.0\.1[ \t\s]*((?!localhost\tpi-nas01).)*$'
-   state: absent
-
-- name: update hosts file with hostname
-  lineinfile:
-   path: /etc/hosts
-   regexp: '^127\.0\.0\.1'
-   line: "127.0.0.1\tlocalhost\tpi-nas01"
-   insertbefore: BOF
-   owner: root
-   group: root
-   mode: '0644'
-
 - name: create directories
   file:
    path: "{{ item }}"
@@ -34,8 +11,16 @@
    group: pi
   with_items:
    - '/mnt/external01'
+   - '/mnt/external01/data/download'
    - '/mnt/external02'
-#   - '/srv/stream/'
+
+- name: create symbolic link for downloads
+  file:
+   src: /mnt/external01/data/download
+   dest: /srv/data/download
+   owner: pi
+   group: pi
+   state: link
 
 - name: create symbolic link for stream
   file:
@@ -56,8 +41,8 @@
 
 - name: create user
   user:
-    name: mastrick
-    password: $6$228438166$VVSp4qoPQObdWBg5yzcCzHL02sxHmgKXPUFHQS/3N6kiNk2Tc5wKpTUq12mZvhnGFqgV58josHlphyZolYyYh/
+    name: nzb
+    password: $6$228438166$tpfWAOPpKR5GLmXzJimwi5zQ3dg0EVz5dgeMUVjsEVWT4CzRYZN26Oxu4UOXcwk06GzqifYRdkZohuixNCbjc.
     update_password: on_create
     
 - name: Configure Samba
