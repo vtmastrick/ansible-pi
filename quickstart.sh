@@ -1,5 +1,3 @@
-  GNU nano 3.2                                                                             quickstart.sh                                                                              Modified
-
 apt-get update -y
 apt-get upgrade -y
 apt autoremove -y
