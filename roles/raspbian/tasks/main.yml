@@ -1,0 +1,7 @@
+---
+- name: set host name
+  hostname:  
+   name: "{{inventory_hostname}}"
+
+- name: change default pi password
+  user: name=pi password=$6$228438166$WZeDX53ZvFdq989jimlLwXp.twAwI10aODeEdcGiePf/j8CHk46llsQlGdfvviz1x701vpP3OWAJduiNHShk80

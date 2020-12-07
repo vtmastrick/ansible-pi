@@ -1,5 +1,4 @@
 ---
-# main nas pi tasks
 - name: install packages
   apt:
     pkg:
@@ -21,13 +20,6 @@
   apt:
     autoremove: yes
 
-- name: set host name
-  hostname:  
-   name: "{{inventory_hostname}}"
-
-- name: change default pi password
-  user: name=pi password=$6$228438166$WZeDX53ZvFdq989jimlLwXp.twAwI10aODeEdcGiePf/j8CHk46llsQlGdfvviz1x701vpP3OWAJduiNHShk80
-
 - name: remove other localhost definitions
   lineinfile:
    path: /etc/hosts
@@ -44,14 +36,18 @@
    group: root
    mode: '0644'
 
+- name: update hosts file with hostname
+  lineinfile:
+   path: /etc/hosts
+   regexp: '^127\.0\.1\.1'
+   line: "127.0.1.1\tlocalhost\t{{inventory_hostname}}"
+   insertbefore: BOF
+   owner: root
+   group: root
+   mode: '0644'
+
 - name: create user
   user:
     name: mastrick
     password: $6$228438166$VVSp4qoPQObdWBg5yzcCzHL02sxHmgKXPUFHQS/3N6kiNk2Tc5wKpTUq12mZvhnGFqgV58josHlphyZolYyYh/
     update_password: always
-
-#- name: create user
-#  user:
-#    name: nzb
-#    password: $6$228438166$tpfWAOPpKR5GLmXzJimwi5zQ3dg0EVz5dgeMUVjsEVWT4CzRYZN26Oxu4UOXcwk06GzqifYRdkZohuixNCbjc.
-#    update_password: on_create

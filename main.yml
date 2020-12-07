@@ -1,11 +1,20 @@
 ---
 #setup raspberry pi
 
-- hosts: pis
+- hosts: raspbian
   become: yes
   become_method: sudo
   roles:
     - pi
+    - raspbian
+
+- hosts: dietpi
+  become: yes
+  become_method: sudo
+  become_user: root
+  roles:
+    - pi
+    - dietpi
 
 - hosts: pi-nas
   become: yes
@@ -19,8 +28,8 @@
   roles:
     - plex
    
-#- hosts: pi-dvr
-#  become: yes
-#  become_method: sudo
-#  roles:
-#    - dvr
+- hosts: pi-dvr
+  become: yes
+  become_method: sudo
+  roles:
+    - dvr

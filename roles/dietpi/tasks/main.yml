@@ -1,0 +1,12 @@
+---
+#requires ansible 2.9
+#- name: set host name
+#  hostname:  
+#   name: "{{inventory_hostname}}"
+#   use: debian
+
+- name: change default dietpi password
+  user: name=dietpi password=$6$228438166$WZeDX53ZvFdq989jimlLwXp.twAwI10aODeEdcGiePf/j8CHk46llsQlGdfvviz1x701vpP3OWAJduiNHShk80
+
+- name: change default root password
+  user: name=root password=$6$228438166$WZeDX53ZvFdq989jimlLwXp.twAwI10aODeEdcGiePf/j8CHk46llsQlGdfvviz1x701vpP3OWAJduiNHShk80
