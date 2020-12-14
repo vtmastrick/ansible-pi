@@ -3,6 +3,10 @@
   apt:
     pkg:
       - aptitude
+      - samba
+      - samba-common-bin
+      - cifs-utils
+      - smbclient
     state: latest
     update_cache: true
 
@@ -23,14 +27,20 @@
 - name: remove other localhost definitions
   lineinfile:
    path: /etc/hosts
-   regexp: '^127\.0\.0\.1[ \t\s]*((?!localhost\t{{inventory_hostname}}).)*$'
+   regexp: '^127\.0\.0\.1[ \t\s]*((?!localhost {{inventory_hostname}}).)*$'
+   state: absent
+
+- name: remove other localhost definitions
+  lineinfile:
+   path: /etc/hosts
+   regexp: '^127\.0\.1\.1[ \t\s]*((?!localhost {{inventory_hostname}}).)*$'
    state: absent
 
 - name: update hosts file with hostname
   lineinfile:
    path: /etc/hosts
    regexp: '^127\.0\.0\.1'
-   line: "127.0.0.1\tlocalhost\t{{inventory_hostname}}"
+   line: "127.0.0.1 localhost {{inventory_hostname}}"
    insertbefore: BOF
    owner: root
    group: root
@@ -40,7 +50,7 @@
   lineinfile:
    path: /etc/hosts
    regexp: '^127\.0\.1\.1'
-   line: "127.0.1.1\tlocalhost\t{{inventory_hostname}}"
+   line: "127.0.1.1 localhost {{inventory_hostname}}"
    insertbefore: BOF
    owner: root
    group: root
