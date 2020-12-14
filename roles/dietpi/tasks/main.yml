@@ -5,6 +5,9 @@
 #   name: "{{inventory_hostname}}"
 #   use: debian
 
+- name: set hostname
+  shell: sudo hostname {{inventory_hostname}}
+
 - name: change default dietpi password
   user: name=dietpi password=$6$228438166$WZeDX53ZvFdq989jimlLwXp.twAwI10aODeEdcGiePf/j8CHk46llsQlGdfvviz1x701vpP3OWAJduiNHShk80
 
