@@ -1,0 +1,40 @@
+---
+- name: ufw allow lan access
+  ufw:
+    rule: allow
+    src:  "{{ item }}"
+  with_items:
+    - 10.10.125.0/24
+
+- name: ufw block all other traffic
+  ufw:
+    default: deny
+    direction: "{{ item }}"
+  with_items:
+    - incoming
+    - outgoing
+
+- name: ufw allow traffic on pia vpn ports
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: udp
+  with_items:
+    - 53
+    - 1198
+
+- name: ufw allow traffic on tun0
+  ufw:
+    rule: allow
+    interface: tun0
+    direction: "{{ item }}"
+  with_items:
+    - out
+    - in
+
+#https://www.comparitech.com/blog/vpn-privacy/how-to-make-a-vpn-kill-switch-in-linux-with-ufw/
+#https://technotipsy.com/linux/check-for-dns-leaks-on-a-headless-linux-server/
+#https://www.privateinternetaccess.com/pages/client-support/
+#https://www.raspberrypi.org/forums/viewtopic.php?p=1371204
+#https://www.raspberrypi.org/forums/viewtopic.php?f=63&t=223733
+#https://www.comparitech.com/blog/vpn-privacy/how-to-make-a-vpn-kill-switch-in-linux-with-ufw/

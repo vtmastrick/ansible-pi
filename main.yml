@@ -33,3 +33,9 @@
   become_method: sudo
   roles:
     - dvr
+
+- hosts: plexUbuntu
+  become: yes
+  become_method: sudo
+  roles:
+    - plex-ubuntu

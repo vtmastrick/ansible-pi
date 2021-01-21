@@ -1,0 +1,15 @@
+---
+- name: install pre-reqs
+  include: install-pre-reqs.yml
+
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: plex
+   group: plex
+  with_items:
+   - '/mnt/pi_nas01/stream/tv'
+   - '/mnt/pi_nas01/stream/movies'
+
+# ufw allow 32400?

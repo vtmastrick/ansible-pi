@@ -5,30 +5,39 @@ all:
       ansible_host: 10.10.125.202
     pi-plex:
       ansible_host: 10.10.125.215
+    plex-thinkCentre:
+      ansible_host: 10.10.125.198
     pi-dvr:
-      ansible_host: 10.10.125.217
+      ansible_host: 10.10.125.6
   children:
     pi:
       hosts:
         pi-nas:
-        pi-plex:
         pi-dvr:
     dietpi:
-      hosts:
-        pi-dvr:
       vars:
         ansible_python_interpreter: /usr/bin/python3
         ansible_ssh_transfer_method: scp
     raspbian:
       hosts:
         pi-nas:
-        pi-plex:
+        pi-dvr:
     pinas:
       hosts:
         pi-nas:
+    plex:
+      hosts:
+        pi-plex:
+        plex-ubuntu:
     piplex:
       hosts:
         pi-plex:
+    plexUbuntu:
+      hosts:
+        plex-thinkCentre:
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
     pidvr:
       hosts:
         pi-dvr:
+

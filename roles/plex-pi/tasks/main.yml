@@ -1,0 +1,10 @@
+---
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: pi
+   group: pi
+  with_items:
+   - '/mnt/pi_nas01/stream/tv'
+   - '/mnt/pi_nas01/stream/movies'

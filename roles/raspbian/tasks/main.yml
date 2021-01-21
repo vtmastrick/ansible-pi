@@ -3,5 +3,14 @@
   hostname:  
    name: "{{inventory_hostname}}"
 
-- name: change default pi password
-  user: name=pi password=$6$228438166$WZeDX53ZvFdq989jimlLwXp.twAwI10aODeEdcGiePf/j8CHk46llsQlGdfvviz1x701vpP3OWAJduiNHShk80
+- name: Include vault
+  include_vars:
+    file: vault.yml
+
+- name: change default passwords
+  user:
+    name: "{{ item.username }}"
+    password: "{{ item.password | password_hash('sha512') }}"
+  with_items: "{{ system_users }}"
+  loop_control:
+    label: "{{ item.username }}"

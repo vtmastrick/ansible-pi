@@ -1,0 +1,127 @@
+---
+- name: install packages
+  apt:
+   pkg:
+    - openvpn
+    - nftables
+    - ufw
+   state: latest
+   update_cache: true
+
+- name: deploy network drop-in for vpn
+  copy:
+   src: etc/network/interfaces.d/eth0.vpn
+   dest: /etc/network/interfaces.d/eth0.vpn
+   owner: pi
+   group: pi
+
+- name: deploy network drop-in for nameservers
+  copy:
+   src: etc/network/interfaces.d/eth0.nameservers
+   dest: /etc/network/interfaces.d/eth0.nameservers
+   owner: pi
+   group: pi
+
+- name: disable ipv6 in interfaces.d
+  copy:
+    dest: /etc/sysctl.d/disable-ipv6.conf
+    content: |    
+      net.ipv6.conf.all.disable_ipv6=1
+      net.ipv6.conf.default.disable_ipv6=1
+      net.ipv6.conf.lo.disable_ipv6=1
+
+- name: disable ipv6 in ufw
+  replace:
+   path: /etc/default/ufw
+   regexp: '^IPV6=yes$'
+   replace: 'IPV6=no'
+
+- name: remote ip6 from hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: '::'
+    state: absent
+
+- name: Download openvpn configuration
+  get_url:
+    url: 'https://www.privateinternetaccess.com/openvpn/openvpn.zip'
+    dest: '/home/ansible/'
+    mode: '0440'
+    owner: 'ansible'
+    group: 'ansible'
+
+- name: create temp location for extraction
+  file:
+    path: '/home/ansible/openvpn'
+    state: directory
+
+- name: extract openvpn.zip to local
+  unarchive:
+    src: '/home/ansible/openvpn.zip'
+    dest: '/home/ansible/openvpn/'
+    remote_src: yes
+
+- name: copy vpn config to settings directory
+  copy:
+    remote_src: yes
+    src: /home/ansible/openvpn/denmark.ovpn
+    dest: /etc/openvpn/pia.conf
+    owner: root
+    group: root
+    mode: u=r,g=r,o=rw
+
+- name: verify credentials file exist
+  stat:
+   path: /etc/openvpn/login
+  register: stat_result
+  changed_when: false
+
+- name: create file if not exists
+  file:
+   path: /etc/openvpn/login
+   state: touch
+  when: not stat_result.stat.exists
+
+- name: check for valid username credentials
+  shell: "head -1 /etc/openvpn/login"
+  register: current_vpn_username
+  changed_when: false
+
+- name: check for valid password credentials
+  shell: "head -2 /etc/openvpn/login | tail -1"
+  register: current_vpn_password
+  changed_when: false
+
+- name: create new vpn password file
+  copy: 
+    dest: /etc/openvpn/login    
+    content: |
+      {{ vpn_credentials.username }}
+      {{ vpn_credentials.password }}
+  when: not stat_result.stat.exists
+  
+- name: set correct username
+  lineinfile: 
+    path: /etc/openvpn/login
+    regexp: "{{ current_vpn_username.stdout }}"
+    line: "{{ vpn_credentials.username }}"
+    state: present
+    insertbefore: BOF
+  when: stat_result.stat.exists
+
+- name: set correct password
+  lineinfile:
+    path: /etc/openvpn/login
+    regexp: "{{ current_vpn_password.stdout }}"
+    line: "{{ vpn_credentials.password }}"
+    state: present
+    insertafter: "{{ vpn_credentials.username }}"
+    firstmatch: yes
+  when: stat_result.stat.exists
+  
+- name: set login file for openvpn
+  lineinfile:
+    path: /etc/openvpn/pia.conf
+    regexp: "^auth-user-pass"
+    line: "auth-user-pass /etc/openvpn/login"
+

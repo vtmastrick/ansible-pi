@@ -1,0 +1,5 @@
+---
+- name: install pre reqs
+  apt:
+   pkg: smbclient
+   state: present

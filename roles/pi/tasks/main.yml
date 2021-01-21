@@ -55,9 +55,3 @@
    owner: root
    group: root
    mode: '0644'
-
-- name: create user
-  user:
-    name: mastrick
-    password: $6$228438166$VVSp4qoPQObdWBg5yzcCzHL02sxHmgKXPUFHQS/3N6kiNk2Tc5wKpTUq12mZvhnGFqgV58josHlphyZolYyYh/
-    update_password: always
