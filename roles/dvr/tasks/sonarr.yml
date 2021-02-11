@@ -1,0 +1,76 @@
+---
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: pidvr
+   group: pidvr
+  with_items:
+   - '/mnt/pi_nas_stream_tv'
+   - '/srv/data/stream/'
+
+- name: create symbolic link for downloads
+  file:
+   src: "{{ item.src }}"
+   dest: "{{ item.dest }}"
+   owner: pidvr
+   group: pidvr
+   state: link
+  with_items:
+   - src : '/mnt/pi_nas_stream_tv'
+     dest : '/srv/data/stream/tv'
+
+- name: add mono key
+  apt_key:
+    id: 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+    keyserver: hkp://keyserver.ubuntu.com:80
+    state: present
+
+- name: add mono repo
+  apt_repository:
+    repo: deb https://download.mono-project.com/repo/debian stable-raspbianbuster main
+    state: present
+    filename: mono-official-stable
+
+- name: install mono
+  apt:
+   pkg:
+    - mono-devel
+   state: latest
+   update_cache: true
+
+- name: add sonarr key
+  apt_key:
+    id: A236C58F409091A18ACA53CBEBFF6B99D9B78493
+    keyserver: keyserver.ubuntu.com
+    state: present
+
+- name: add sonarr repo
+  apt_repository:
+    repo: deb http://apt.sonarr.tv/ master main
+    state: present
+    filename: sonarr
+
+- name: install sonarr
+  apt:
+    pkg:
+     - nzbdrone
+    state: latest
+    update_cache: true
+
+- name: grant pidvr permissions to sonarr
+  file:
+    path: /opt/NzbDrone
+    owner: pidvr
+    group: pidvr
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/sonarr.service
+    dest: /etc/systemd/system/sonarr.service
+
+- name: enable sonarr service
+  service:
+    name: sonarr
+    state: started
+    enabled: yes

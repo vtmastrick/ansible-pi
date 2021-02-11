@@ -9,26 +9,14 @@
     password: $6$228438166$tpfWAOPpKR5GLmXzJimwi5zQ3dg0EVz5dgeMUVjsEVWT4CzRYZN26Oxu4UOXcwk06GzqifYRdkZohuixNCbjc.
     update_password: on_create
 
-- name: create directories
-  file:
-   path: "{{ item }}"
-   state: directory
-   owner: pidvr
-   group: pidvr
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
   with_items:
-   - '/mnt/pi_nas_stream_tv'
-   - '/srv/data/stream/'
-
-- name: create symbolic link for downloads
-  file:
-   src: "{{ item.src }}"
-   dest: "{{ item.dest }}"
-   owner: pidvr
-   group: pidvr
-   state: link
-  with_items:
-   - src : '/mnt/pi_nas_stream_tv'
-     dest : '/srv/data/stream/tv'
+   - "//10.10.125.202/stream-tv    /mnt/pi_nas_stream_tv cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
+   - "//10.10.125.202/download-nzb /mnt/pi_nas_nzb       cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
 
 - name: install vpn
   include: vpn.yml
@@ -39,11 +27,5 @@
 - name: setup nzbget
   include: nzbget.yml
 
-- name: add mounts to fstab
-  lineinfile:
-   path: /etc/fstab
-   line: "{{ item }}"
-   create: yes
-  with_items:
-   - "//10.10.125.202/stream-tv    /mnt/pi_nas_stream_tv cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
-   - "//10.10.125.202/download-nzb /mnt/pi_nas_nzb       cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
+- name: setup sonarr
+  include: sonarr.yml

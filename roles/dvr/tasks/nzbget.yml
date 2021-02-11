@@ -192,3 +192,13 @@
     marker_end: "End Server 3 Info"
     insertafter: "# End Server 2 Info ANSIBLE MANAGED BLOCK"
 
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/nzbget.service
+    dest: /etc/systemd/system/nbzget.service
+
+- name: enable nzbget service
+  service:
+    name: nzbget
+    state: started
+    enabled: yes
