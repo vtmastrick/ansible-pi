@@ -1,0 +1,2 @@
+---
+global_users: "{{ vault_global_users }}"

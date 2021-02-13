@@ -1,0 +1,17 @@
+[Unit]
+Description=NZBGet
+After=network.target
+
+[Service]
+User=pidvr
+Group=pidvr
+ExecStart=/opt/nzbget/nzbget -D
+Type=forking
+ExecStop=/opt/nzbget/nzbget -Q
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+
+[Install]
+# Needed to run nzbget at boot
+WantedBy=multi-user.target
+
