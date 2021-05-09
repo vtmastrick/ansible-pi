@@ -1,4 +1,16 @@
 ---
+- name: add key for rpi monitor
+  apt_key:
+    id: 2C0D3C0F
+    keyserver: keyserver.ubuntu.com
+    state: present
+
+- name: add rpi monitor repo
+  apt_repository:
+    repo: deb http://giteduberger.fr rpimonitor/
+    state: present
+    filename: rpimonitor
+
 - name: install packages
   apt:
     pkg:
@@ -7,6 +19,7 @@
       - samba-common-bin
       - cifs-utils
       - smbclient
+      - rpimonitor
     state: latest
     update_cache: true
 
