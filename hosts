@@ -2,11 +2,11 @@
 all:
   hosts:
     pi-nas:
-      ansible_host: 10.10.125.202
+      ansible_host: pinas.private
     plex-thinkCentre:
-      ansible_host: 10.10.125.198
+      ansible_host: plex.private
     pi-dvr:
-      ansible_host: 10.10.125.6
+      ansible_host: dvr.private
   children:
     pi:
       hosts:

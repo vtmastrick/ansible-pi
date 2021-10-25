@@ -15,8 +15,8 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//10.10.125.202/stream-tv    /mnt/pi_nas_stream_tv cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
-   - "//10.10.125.202/download-nzb /mnt/pi_nas_nzb       cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
+   - "//pinas.private/stream-tv    /mnt/pi_nas_stream_tv cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
+   - "//pinase.private/download-nzb /mnt/pi_nas_nzb       cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
 
 - name: install vpn
   include: vpn.yml

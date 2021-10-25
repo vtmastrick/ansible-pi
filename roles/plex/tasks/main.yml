@@ -8,8 +8,8 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - '//pi-nas.local/stream-tv /mnt/pi_nas01/stream/tv cifs guest,uid=1000,iocharset=utf8 0 0'
-   - '//pi-nas.local/stream-movies /mnt/pi_nas01/stream/movies cifs guest,uid=1000,iocharset=utf8 0 0'
+   - '//pi-nas.private/stream-tv /mnt/pi_nas01/stream/tv cifs guest,uid=1000,iocharset=utf8 0 0'
+   - '//pi-nas.private/stream-movies /mnt/pi_nas01/stream/movies cifs guest,uid=1000,iocharset=utf8 0 0'
 
 - name: install plex
   include: plex.yml
