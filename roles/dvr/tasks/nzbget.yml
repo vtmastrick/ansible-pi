@@ -6,8 +6,9 @@
    owner: pidvr
    group: pidvr
   with_items:
-   - '/mnt/pi_nas_nzb'
+   - '/mnt/nzb'
    - '/opt/etc/nzbget.conf'
+   - '/srv/data/'
 
 - name: create symbolic link for downloads
   file:
@@ -17,8 +18,16 @@
    group: pidvr
    state: link
   with_items:
-   - src : '/mnt/pi_nas_nzb'
+   - src : '/mnt/nzb'
      dest : '/srv/data/nzb' 
+
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
+  with_items:
+   - "//nas02.private/temp_nzb /mnt/nzb cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
 
 - name: download nzbget
   get_url:
@@ -38,6 +47,8 @@
     path: /opt/nzbget
     owner: pidvr
     group: pidvr
+    state: directory
+    recurse: yes
 
 - name: set nzb options for pi
   lineinfile:
@@ -195,7 +206,7 @@
 - name: deploy init script
   copy:
     src: etc/systemd/system/nzbget.service
-    dest: /etc/systemd/system/nbzget.service
+    dest: /etc/systemd/system/nzbget.service
 
 - name: enable nzbget service
   service:

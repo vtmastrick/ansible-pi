@@ -5,8 +5,15 @@
     - openvpn
     - nftables
     - ufw
+    - unzip
    state: latest
    update_cache: true
+  register: apt_update
+
+- name: reboot on nftables install or update
+  reboot:
+   test_command: whoami
+  when: apt_update.changed
 
 - name: deploy network drop-in for vpn
   copy:

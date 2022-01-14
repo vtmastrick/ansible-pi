@@ -3,20 +3,26 @@
   include_vars:
     file: vault.yml
 
+- name: create group
+  group:
+    name: dvr
+    state: present
+
 - name: create user
   user:
     name: pidvr
     password: $6$228438166$tpfWAOPpKR5GLmXzJimwi5zQ3dg0EVz5dgeMUVjsEVWT4CzRYZN26Oxu4UOXcwk06GzqifYRdkZohuixNCbjc.
     update_password: on_create
+    group: dvr
 
-- name: add mounts to fstab
-  lineinfile:
-   path: /etc/fstab
-   line: "{{ item }}"
-   create: yes
-  with_items:
-   - "//pinas.private/stream-tv    /mnt/pi_nas_stream_tv cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
-   - "//pinase.private/download-nzb /mnt/pi_nas_nzb       cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
+#- name: add mounts to fstab
+#  lineinfile:
+#   path: /etc/fstab
+#   line: "{{ item }}"
+#   create: yes
+#  with_items:
+#   - "//nas02.private/Videos/tv    /mnt/stream_tv cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
+#   - "//nas02.private/tmp/download-nzb /mnt/nzb       cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
 
 - name: install vpn
   include: vpn.yml

@@ -3,8 +3,8 @@ Description=Sonarr Daemon
 After=network.target
 
 [Service]
-User=pidvr
-Group=pidvr
+User=sonarr
+Group=sonarr
 Restart=always
 RestartSec=5
 Type=simple

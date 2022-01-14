@@ -20,6 +20,7 @@
       - cifs-utils
       - smbclient
       - rpimonitor
+      - unzip
     state: latest
     update_cache: true
 

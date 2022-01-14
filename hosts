@@ -2,16 +2,18 @@
 all:
   hosts:
     pi-nas:
-      ansible_host: pinas.private
+#      ansible_host: pinas.private
     plex-thinkCentre:
-      ansible_host: plex.private
+#      ansible_host: plex.private
     pi-dvr:
-      ansible_host: dvr.private
+      #ansible_host: pidvr.private
+      ansible_host: dvr
   children:
     pi:
       hosts:
         pi-nas:
         pi-dvr:
+        dvr:
     dietpi:
       vars:
         ansible_python_interpreter: /usr/bin/python3

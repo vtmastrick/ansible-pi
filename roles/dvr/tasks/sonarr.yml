@@ -1,24 +1,48 @@
 ---
+- name: create sonarr group
+  group:
+    name: sonarr
+    state: present
+
+- name: create sonarr user
+  user: 
+    name: sonarr
+    state: present
+    group: sonarr
+
 - name: create directories
   file:
    path: "{{ item }}"
    state: directory
-   owner: pidvr
-   group: pidvr
+   owner: sonarr
+   group: sonarr
   with_items:
-   - '/mnt/pi_nas_stream_tv'
-   - '/srv/data/stream/'
+   - '/mnt/sonarr'
+   - '/mnt/sonarr/tv'
 
-- name: create symbolic link for downloads
-  file:
-   src: "{{ item.src }}"
-   dest: "{{ item.dest }}"
-   owner: pidvr
-   group: pidvr
-   state: link
+- name: install necessary packages
+  apt:
+    pkg:
+     - gpg
+     - samba
+     - samba-common-bin
+     - cifs-utils
+     - smbclient
+    state: latest
+    update_cache: true
+
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
   with_items:
-   - src : '/mnt/pi_nas_stream_tv'
-     dest : '/srv/data/stream/tv'
+   - "//nas02.private/Videos/tv    /mnt/sonarr/tv cifs username={{ sonarr_creds.username }},password={{ sonarr_creds.password }},iocharset=utf8,uid=sonarr,gid=sonarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+
+- name: mount all
+  command: mount -a
+  args:
+    warn: no
 
 - name: add mono key
   apt_key:
@@ -41,36 +65,19 @@
 
 - name: add sonarr key
   apt_key:
-    id: A236C58F409091A18ACA53CBEBFF6B99D9B78493
+    id: 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
     keyserver: keyserver.ubuntu.com
     state: present
 
 - name: add sonarr repo
   apt_repository:
-    repo: deb http://apt.sonarr.tv/ master main
+    repo: deb https://apt.sonarr.tv/debian buster main
     state: present
     filename: sonarr
 
 - name: install sonarr
   apt:
     pkg:
-     - nzbdrone
+     - sonarr
     state: latest
     update_cache: true
-
-- name: grant pidvr permissions to sonarr
-  file:
-    path: /opt/NzbDrone
-    owner: pidvr
-    group: pidvr
-
-- name: deploy init script
-  copy:
-    src: etc/systemd/system/sonarr.service
-    dest: /etc/systemd/system/sonarr.service
-
-- name: enable sonarr service
-  service:
-    name: sonarr
-    state: started
-    enabled: yes
