@@ -7,29 +7,13 @@
     - pi
     - raspbian
 
-- hosts: dietpi
-  become: yes
-  become_method: sudo
-  become_user: root
-  roles:
-    - global
-    - pi
-    - dietpi
-
 - hosts: pi-nas
   become: yes
   become_method: sudo
   roles:
     - global
     - nas
-
-- hosts: pi-plex
-  become: yes
-  become_method: sudo
-  roles:
-    - global
-    - plex
-   
+ 
 - hosts: pi-dvr
   become: yes
   become_method: sudo
