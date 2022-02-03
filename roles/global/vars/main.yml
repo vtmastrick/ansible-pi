@@ -1,2 +1,4 @@
 ---
+password_salt: "{{ vault_password_salt }}"
 global_users: "{{ vault_global_users }}"
+global_users_passwords: "{{ vault_global_users_passwords }}"
