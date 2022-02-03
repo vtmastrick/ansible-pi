@@ -2,11 +2,12 @@
 - name: include vault
   include_vars:
     file: vault.yml
-  
+
 - name: create users
   user:
     name: "{{ item.username }}"
-    password: "{{ item.pasword | password_hash('sha512') }}"
+    password: "{{ (global_users_passwords | selectattr('username', 'equalto', item.username) | first).password | password_hash('sha512', password_salt) }}"
+    update_password: always
     state: present
   with_items:
     - "{{ global_users }}"

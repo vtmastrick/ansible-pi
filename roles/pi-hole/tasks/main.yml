@@ -20,11 +20,16 @@
     name: pihole
     state: present
 
+- name: salt password
+  set_fact:
+    salted_password: "{{ pihole_password | password_hash('sha512', password_salt) }}"
+    run_once: true
+
 - name: create user
   user:
     name: "{{ pihole_username }}"
-    password: "{{ pihole_password }}"
-    update_password: on_create
+    password: "{{ salted_password }}"
+    update_password: always
     group: "{{ pihole_username }}"
 
 - name: add pihole to docker group

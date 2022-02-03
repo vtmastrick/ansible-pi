@@ -1,4 +1,5 @@
 ---
+password_salt: "{{ vault_password_salt }}"
 pihole_web_credentials: "{{ vault_pihole_web_credentials }}"
 pihole_user_credentials: "{{ vault_pihole_user_credentials }}"
 pihole_username: "{{ pihole_user_credentials.username }}"
