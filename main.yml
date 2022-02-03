@@ -43,3 +43,10 @@
   roles:
     - global
     - plex-ubuntu
+
+- hosts: pi-hole
+  become: yes
+  become_method: sudo
+  roles:
+    - global
+    - pi-hole

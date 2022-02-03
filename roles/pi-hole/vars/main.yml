@@ -1,0 +1,8 @@
+---
+pihole_web_credentials: "{{ vault_pihole_web_credentials }}"
+pihole_user_credentials: "{{ vault_pihole_user_credentials }}"
+pihole_username: "{{ pihole_user_credentials.username }}"
+pihole_password: "{{ pihole_user_credentials.password }}"
+docker_compose_yml_path: "/srv/docker/pi-hole/docker-compose.yml"
+docker_compose_yml_example_path: "/srv/docker/pi-hole/docker-compose.yml.example"
+

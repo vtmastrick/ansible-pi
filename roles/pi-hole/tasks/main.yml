@@ -1,0 +1,143 @@
+---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: install docker
+  apt:
+    pkg:
+      - docker
+      - docker-compose
+  register: aptupdate
+
+- name: reboot on apt update
+  reboot:
+    test_command: whoami
+  when: aptupdate.changed
+
+- name: create group
+  group:
+    name: pihole
+    state: present
+
+- name: create user
+  user:
+    name: "{{ pihole_username }}"
+    password: "{{ pihole_password }}"
+    update_password: on_create
+    group: "{{ pihole_username }}"
+
+- name: add pihole to docker group
+  user:
+    name: "{{ pihole_username }}"
+    groups: docker
+    append: yes
+
+- name: Enable service docker and ensure it is not masked
+  systemd:
+    name: docker
+    enabled: yes
+
+- name: create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: pihole
+    group: pihole
+  with_items:
+    - /srv/docker/pi-hole
+    - /srv/docker/pi-hole/etc-pihole
+    - /srv/docker/pi-hole/etc-dnsmasq.d
+
+- name: get docker compose yml for pi-hole
+  get_url:
+    url: https://raw.githubusercontent.com/pi-hole/docker-pi-hole/master/docker-compose.yml.example
+    dest: /srv/docker/pi-hole/
+    mode: 0550
+    owner: "{{ pihole_username }}"
+    group: "{{ pihole_username }}"
+    force: true
+  changed_when: false
+
+- name: set webpassword
+  lineinfile: 
+    path: /srv/docker/pi-hole/docker-compose.yml.example
+    regexp: '^(\s*)(#\s)(WEBPASSWORD:\s).*'
+    line: '\1\3''{{ pihole_web_credentials.password  }}'''
+    backrefs: yes
+  changed_when: false
+    
+- name: set timezone
+  lineinfile:
+    path: "{{ docker_compose_yml_example_path }}"
+    regexp: '^(\s* TZ:\s).*$'
+    line: '\1America/NewYork'
+    backrefs: yes
+  changed_when: false
+
+- name: set DNS options
+  lineinfile:
+    path: "{{ docker_compose_yml_example_path }}"
+    line: '      PIHOLE_DNS_: 1.1.1.1;208.67.222.222'
+    insertafter: 'WEBPASSWORD'
+  changed_when: false
+
+#- name: verify log file exists
+#  file:
+#    path: /var/log/pihole.log
+#    state: touch
+#    owner: pihole
+#    group: pihole
+#    mode: u=rw,g=r,o=r
+
+#set host name
+
+- name: Get cksum of my current file
+  stat:
+    path : "{{ docker_compose_yml_path }}"
+  register: currentFile
+
+- name: Current SHA1
+  set_fact:
+    f1sha1: "{{ currentFile.stat.checksum if currentFile.stat.exists else 0}}"
+
+- name: Get cksum of example
+  stat:
+    path : "{{ docker_compose_yml_example_path }}"
+  register: exampleFile
+
+- name: Current SHA1
+  set_fact:
+    f2sha1: "{{ exampleFile.stat.checksum }}"
+
+- name: YML Changed
+  set_fact:
+    ymlChanged: "{{ f2sha1 != f1sha1 }}"
+
+- name: replace docker YML if changed
+  copy:
+    src: "{{ docker_compose_yml_example_path }}"
+    dest: "{{ docker_compose_yml_path }}"
+    owner: "{{ pihole_username }}"
+    group: "{{ pihole_username }}"  
+    remote_src: yes
+  when: ymlChanged|bool
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/pihole.service
+    dest: /etc/systemd/system/pihole.service
+
+- name: deploy hosts file
+  copy:
+    src: srv/docker/pi-hole/etc-pihole/custom.list
+    dest: /srv/docker/pi-hole/etc-pihole/custom.list
+    owner: "{{ pihole_username }}"
+    group: "{{ pihole_username }}"
+
+- name: enable docker pihole service
+  service:
+    name: pihole
+    state: started
+    enabled: yes
+  when: ymlChanged|bool
