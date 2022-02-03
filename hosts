@@ -1,35 +1,29 @@
 ---
 all:
   hosts:
-    pi-nas:
-#      ansible_host: pinas.private
     plex-thinkCentre:
-#      ansible_host: plex.private
+      ansible_host: plex.private
     pi-dvr:
-      #ansible_host: pidvr.private
+      ansible_host: pidvr.private
       ansible_host: dvr
+     pi-hole:
+       ansible_host: pi-hole
   children:
     pi:
       hosts:
-        pi-nas:
         pi-dvr:
         dvr:
-    dietpi:
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
-        ansible_ssh_transfer_method: scp
+        pi-hole:
     raspbian:
       hosts:
         pi-nas:
         pi-dvr:
+        pi-hole:
     ubuntu:
       hosts:
         plex-thinkCentre:
       vars:
         ansible_python_interpreter: /usr/bin/python3   
-    pinas:
-      hosts:
-        pi-nas:
     plex:
       hosts:
         plex-ubuntu:
@@ -41,4 +35,7 @@ all:
     pidvr:
       hosts:
         pi-dvr:
+    pihole:
+      hosts:
+        pi-hole:
 
