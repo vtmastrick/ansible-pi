@@ -1,0 +1,14 @@
+[Unit]
+Description=Pi-Hole on Docker
+Requires=docker.service
+After=docker.service
+
+[Service]
+User=pihole
+Group=pihole
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/pi-hole/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/pi-hole/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

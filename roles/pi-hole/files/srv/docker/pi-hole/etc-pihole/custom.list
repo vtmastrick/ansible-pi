@@ -1,0 +1,6 @@
+192.168.1.33 mastrick.local
+192.168.1.201 nas01.local
+192.168.1.222 nas02.local
+192.168.1.225 pihole.local
+192.168.1.210 ansible.local
+192.168.1.237 plex.local
