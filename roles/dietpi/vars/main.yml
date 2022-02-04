@@ -1,2 +1,0 @@
----
-system_users: "{{ vault_dietpi_system_users }}"
