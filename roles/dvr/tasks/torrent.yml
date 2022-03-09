@@ -1,0 +1,57 @@
+---
+- name: create bt group
+  group:
+    name:  qbittorrent-nox
+    state: present
+
+- name: create sonarr user
+  user:
+    name: qbittorrent-nox
+    state: present
+    group: qbittorrent-nox
+
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: qbittorrent-nox
+   group: qbittorrent-nox
+  with_items:
+   - '/mnt/qbittorrent-nox'
+
+- name: add repo
+  apt_repository:
+    repo: ppa:qbittorrent-team/qbittorrent-stable
+    state: present
+
+- name: install necessary packages
+  apt:
+    pkg:
+     - qbittorrent
+     - qbittorrent-nox
+    state: latest
+    update_cache: true
+
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
+  with_items:
+   - "//nas02.local/temp_torrent    /mnt/qbittorrent-nox cifs username={{ qbittorrent-nox_creds.username }},password={{ qbittorrent-nox_creds.password }},iocharset=utf8,uid=qbittorrent-nox,gid=qbittorrent-nox,file_mode=0755,dir_mode=0755,vers=3.1.1"
+
+- name: mount all
+  command: mount -a
+  args:
+    warn: no
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/qbittorrent.service
+    dest: /etc/systemd/system/qbittorrent.service
+
+- name: enable qbittorrent service
+  service:
+    name: qbittorrent
+    state: started
+    enabled: yes
