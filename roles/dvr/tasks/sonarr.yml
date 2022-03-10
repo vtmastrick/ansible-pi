@@ -37,7 +37,7 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02.private/Videos/tv    /mnt/sonarr/tv cifs username={{ sonarr_creds.username }},password={{ sonarr_creds.password }},iocharset=utf8,uid=sonarr,gid=sonarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02.local/Videos/tv    /mnt/sonarr/tv cifs username={{ sonarr_creds.username }},password={{ sonarr_creds.password }},iocharset=utf8,uid=sonarr,gid=sonarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a
