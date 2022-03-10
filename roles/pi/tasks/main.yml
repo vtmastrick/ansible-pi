@@ -1,4 +1,11 @@
 ---
+- name: install packages
+  apt:
+    pkg:
+      - gpg
+    state: latest
+    update_cache: true
+
 - name: add key for rpi monitor
   apt_key:
     id: 2C0D3C0F

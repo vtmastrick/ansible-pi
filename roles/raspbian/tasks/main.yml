@@ -10,7 +10,8 @@
 - name: change default passwords
   user:
     name: "{{ item.username }}"
-    password: "{{ item.password | password_hash('sha512') }}"
+    password: "{{ item.password | password_hash('sha512', password_salt ) }}"
+    update_password: always
   with_items: "{{ system_users }}"
   loop_control:
     label: "{{ item.username }}"
