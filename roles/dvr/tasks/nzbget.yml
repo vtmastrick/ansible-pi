@@ -27,7 +27,7 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02.private/temp_nzb /mnt/nzb cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
+   - "//nas02.local/temp_nzb /mnt/nzb cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
 
 - name: download nzbget
   get_url:
