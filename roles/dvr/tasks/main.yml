@@ -8,12 +8,17 @@
     name: dvr
     state: present
 
+- name: salt password
+  set_fact:
+    salted_password: "{{ dvr_password | password_hash('sha512', password_salt) }}"
+    run_once: true
+
 - name: create user
   user:
-    name: pidvr
-    password: $6$228438166$tpfWAOPpKR5GLmXzJimwi5zQ3dg0EVz5dgeMUVjsEVWT4CzRYZN26Oxu4UOXcwk06GzqifYRdkZohuixNCbjc.
-    update_password: on_create
-    group: dvr
+    name: "{{ dvr_username }}"
+    password: "{{ salted_password }}"
+    update_password: always
+    group: "{{ dvr_username }}"
 
 #- name: add mounts to fstab
 #  lineinfile:
@@ -30,8 +35,11 @@
 - name: setup firewall
   include: firewall.yml
 
-- name: setup nzbget
-  include: nzbget.yml
+#- name: setup nzbget
+#  include: nzbget.yml
 
-- name: setup sonarr
-  include: sonarr.yml
+#- name: setup sonarr
+#  include: sonarr.yml
+
+#- name: setup qbt
+#  include: torrent.yml
