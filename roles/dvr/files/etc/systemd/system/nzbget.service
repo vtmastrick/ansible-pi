@@ -3,11 +3,11 @@ Description=NZBGet
 After=network.target
 
 [Service]
-User=pidvr
-Group=pidvr
-ExecStart=/opt/nzbget/nzbget -D
+User=dvr
+Group=dvr
+ExecStart=/usr/bin/nzbget -D
 Type=forking
-ExecStop=/opt/nzbget/nzbget -Q
+ExecStop=/usr/bin/nzbget -Q
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 
