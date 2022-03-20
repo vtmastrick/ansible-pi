@@ -8,12 +8,17 @@
     name: dvr
     state: present
 
+- name: salt password
+  set_fact:
+    salted_password: "{{ dvr_password | password_hash('sha512', password_salt) }}"
+    run_once: true
+
 - name: create user
   user:
-    name: pidvr
-    password: $6$228438166$tpfWAOPpKR5GLmXzJimwi5zQ3dg0EVz5dgeMUVjsEVWT4CzRYZN26Oxu4UOXcwk06GzqifYRdkZohuixNCbjc.
-    update_password: on_create
-    group: dvr
+    name: "{{ dvr_username }}"
+    password: "{{ salted_password }}"
+    update_password: always
+    group: "{{ dvr_username }}"
 
 #- name: add mounts to fstab
 #  lineinfile:
@@ -24,14 +29,17 @@
 #   - "//nas02.private/Videos/tv    /mnt/stream_tv cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
 #   - "//nas02.private/tmp/download-nzb /mnt/nzb       cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
 
-- name: install vpn
-  include: vpn.yml
+#- name: install vpn
+#  include: vpn.yml
 
-- name: setup firewall
-  include: firewall.yml
+#- name: setup firewall
+#  include: firewall.yml
 
 - name: setup nzbget
   include: nzbget.yml
 
-- name: setup sonarr
-  include: sonarr.yml
+#- name: setup sonarr
+#  include: sonarr.yml
+
+#- name: setup qbt
+#  include: torrent.yml

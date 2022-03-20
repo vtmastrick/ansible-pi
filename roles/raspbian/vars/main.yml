@@ -1,2 +1,3 @@
 ---
+password_salt: "{{ vault_password_salt }}"
 system_users: "{{ vault_pi_system_users }}"

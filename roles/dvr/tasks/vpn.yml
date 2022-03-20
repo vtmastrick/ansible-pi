@@ -67,15 +67,46 @@
     src: '/home/ansible/openvpn.zip'
     dest: '/home/ansible/openvpn/'
     remote_src: yes
+  changed_when: false
+
+- name: set login file for openvpn
+  lineinfile:
+    path: "{{ vpn_config_path_src }}"
+    regexp: "^auth-user-pass"
+    line: "auth-user-pass /etc/openvpn/login"
+  changed_when: false
+
+- name: Get cksum of current config file
+  stat:
+    path: "{{ vpn_config_path_dest }}"
+  register: destFile
+
+- name: Current SHA1
+  set_fact:
+    f1sha1: "{{ destFile.stat.checksum if destFile.stat.exists else 0}}"
+
+- name: Get cksum of source config file
+  stat:
+    path: "{{ vpn_config_path_src }}"
+  register: sourceFile
+
+- name: Source SHA1
+  set_fact:
+    f2sha1: "{{ sourceFile.stat.checksum }}"
+
+- name: Check configuration change
+  set_fact:
+    configChanged: "{{ f2sha1 != f1sha1 }}"
 
 - name: copy vpn config to settings directory
   copy:
-    remote_src: yes
-    src: /home/ansible/openvpn/denmark.ovpn
-    dest: /etc/openvpn/pia.conf
+    src: "{{ vpn_config_path_src }}"
+    dest: "{{ vpn_config_path_dest }}"
     owner: root
     group: root
     mode: u=r,g=r,o=rw
+    remote_src: yes
+  when: configChanged
 
 - name: verify credentials file exist
   stat:
@@ -125,10 +156,3 @@
     insertafter: "{{ vpn_credentials.username }}"
     firstmatch: yes
   when: stat_result.stat.exists
-  
-- name: set login file for openvpn
-  lineinfile:
-    path: /etc/openvpn/pia.conf
-    regexp: "^auth-user-pass"
-    line: "auth-user-pass /etc/openvpn/login"
-

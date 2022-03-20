@@ -1,10 +1,14 @@
 ---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
 - name: create directories
   file:
    path: "{{ item }}"
    state: directory
-   owner: pidvr
-   group: pidvr
+   owner: "{{ dvr_username }}"
+   group: "{{ dvr_username }}"
   with_items:
    - '/mnt/nzb'
    - '/opt/etc/nzbget.conf'
@@ -14,8 +18,8 @@
   file:
    src: "{{ item.src }}"
    dest: "{{ item.dest }}"
-   owner: pidvr
-   group: pidvr
+   owner: "{{ dvr_username }}"
+   group: "{{ dvr_username }}"
    state: link
   with_items:
    - src : '/mnt/nzb'
@@ -27,182 +31,78 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02.local/temp_nzb /mnt/nzb cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid=pidvr,gid=pidvr,file_mode=0777,dir_mode=0777,vers=3.1.1"
-
-- name: download nzbget
-  get_url:
-    url: 'https://nzbget.net/download/nzbget-latest-bin-linux.run'
-    dest: '/tmp/nzbget.run'
-    mode: 0770
-    owner: pidvr
-    group: pidvr
+   - "//nas02.private/temp_nzb /mnt/nzb cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid={{ dvr_username }},gid={{ dvr_username }},file_mode=0777,dir_mode=0777,vers=3.1.1"
 
 - name: install nzbget
-  shell: "/tmp/nzbget.run --destdir /opt/nzbget"
-#  args:
-#    creates: /opt/nzbget
+  apt:
+    pkg:
+      - nzbget
+    state: latest
+  register: apt_update
 
-- name: grant pidvr permissions to nzbget
+- name: copy config file to target
+  copy:
+    src: etc/nzbget.conf
+    dest: ~/nzbget.conf
+
+- name: get cksum of current file
+  stat:
+    path: /etc/nzbget.conf
+  register: currentFile
+
+- name: Current SHA1
+  set_fact:
+    f1sha1: "{{ currentFile.stat.checksum if currentFile.stat.exists else 0}}"
+
+- name: get cksum of source file
+  stat:
+    path: ~/nzbget.conf
+  register: sourceFile
+
+- name: Source file SHA1
+  set_fact:
+    f2sha1: "{{ sourceFile.stat.checksum }}"
+
+- name: Config Changed
+  set_fact:
+    configChanged: "{{ f2sha1 != f1sha1 }}"
+
+- name: replace config if changed
+  copy:
+    src:  ~/nzbget.conf
+    dest: /etc/nzbget.conf
+    owner: "{{ dvr_username }}"
+    group: "{{ dvr_username }}"  
+    remote_src: yes
+  when: configChanged|bool
+
+- name: set permissions for config
   file:
-    path: /opt/nzbget
-    owner: pidvr
-    group: pidvr
-    state: directory
+    dest: /etc/nzbget.conf
+    owner: "{{ dvr_username }}"
+    group: "{{ dvr_username }}"
+
+- name: set permissions for nzbget
+  file:
+    dest: /usr/bin/nzbget
+    owner: "{{ dvr_username }}"
+    group: "{{ dvr_username }}"
+    mode: 0754  
+
+- name: set permissions for nzbget ui
+  file:
+    dest: /usr/share/nzbget
+    owner: "{{ dvr_username }}"
+    group: "{{ dvr_username }}"
+    mode: 0754
     recurse: yes
-
-- name: set nzb options for pi
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: present
-    regexp: 'UMask='
-    line: 'UMask=0'
-
-- name: set nzb options for pi
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: present
-    regexp: 'WriteBuffer='
-    line: 'WriteBuffer=1024' #change to 90 if perf is bad
-
-- name: set nzb options for pi
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: present
-    regexp: 'DetailTarget='
-    line: 'DetailTarget=none'
-  
-- name: set nzb options for pi
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: present
-    regexp: 'DebugTarget='
-    line: 'DebugTarget=none'
-
-- name: set nzb options for pi
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: present
-    regexp: 'CrashTrace='
-    line: 'CrashTrace=no'
-
-- name: set nzb options for pi
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: present
-    regexp: 'CrcCheck='
-    line: 'CrcCheck=no'
-
-- name: set nzb options for pi
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: present
-    regexp: 'LogFile='
-    line: 'LogFile=/var/log/nzbget.log'
-
-- name: set start blocks for server 1
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: present
-    regexp: '# Start Server 1 Info'
-    line: '# Start Server 1 Info ANSIBLE MANAGED BLOCK'
-    insertafter: '^#+.*\(level\)\.$'
-
-- name: set end blocks for server 1
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: present
-    regexp: '# End Server 1 Info ANSIBLE MANAGED BLOCK'
-    line: '# End Server 1 Info ANSIBLE MANAGED BLOCK'
-    insertbefore: '# Second server, on level 0.'
-
-- name: remove email functionality from nzbget
-  lineinfile:
-    path: /opt/nzbget/nzbget.conf
-    state: absent
-    regexp: 'EMail.py'
-
-- name: remove email functionality from nzbget
+   
+- name: set permissions for log
   file:
-    path: /opt/nzbget/scripts/EMail.py
-    state: absent
-
-- name: insert/update server 1 information
-  blockinfile:
-    path: /opt/nzbget/nzbget.conf
-    block: | 
-
-      Server1.Active={{ nzb_servers[0].active }}
-      Server1.Name={{ nzb_servers[0].serverhost }}
-      Server1.Level={{ nzb_servers[0].level }}
-      Server1.Optional=no
-      Server1.Group=0 
-      Server1.Host={{ nzb_servers[0].serverhost }}
-      Server1.Port={{ nzb_servers[0].port }}
-      Server1.Username={{ nzb_servers[0].username }}
-      Server1.Password={{ nzb_servers[0].password }} 
-      Server1.JoinGroup=no
-      Server1.Encryption={{ nzb_servers[0].encryption }}
-      Server1.Cipher={{ nzb_servers[0].cipher }}
-      Server1.Connections={{ nzb_servers[0].connections }}
-      Server1.Retention={{ nzb_servers[0].retention }} 
-      Server1.IpVersion=auto
-      Server1.Notes={{ nzb_servers[0].notes }}
-
-    marker_begin: "Start Server 1 Info"
-    marker_end: "End Server 1 Info"
-
-- name: insert/update server 2 information
-  blockinfile:
-    path: /opt/nzbget/nzbget.conf
-    block: | 
-
-      Server2.Active={{ nzb_servers[1].active }}
-      Server2.Name={{ nzb_servers[1].serverhost }}
-      Server2.Level={{ nzb_servers[1].level }}
-      Server2.Optional=no
-      Server2.Group=0 
-      Server2.Host={{ nzb_servers[1].serverhost }}
-      Server2.Port={{ nzb_servers[1].port }}
-      Server2.Username={{ nzb_servers[1].username }}
-      Server2.Password={{ nzb_servers[1].password }} 
-      Server2.JoinGroup=no
-      Server2.Encryption={{ nzb_servers[1].encryption }}
-      Server2.Cipher={{ nzb_servers[1].cipher }}
-      Server2.Connections={{ nzb_servers[1].connections }}
-      Server2.Retention={{ nzb_servers[1].retention }} 
-      Server2.IpVersion=auto
-      Server2.Notes={{ nzb_servers[1].notes }}
-
-    marker_begin: "Start Server 2 Info"
-    marker_end: "End Server 2 Info"
-    insertafter: "Server3.Connections=1"
-
-- name: insert/update server 3 information
-  blockinfile:
-    path: /opt/nzbget/nzbget.conf
-    block: |
-
-      Server3.Active={{ nzb_servers[2].active }}
-      Server3.Name={{ nzb_servers[2].serverhost }}
-      Server3.Level={{ nzb_servers[2].level }}
-      Server3.Optional=no
-      Server3.Group=0 
-      Server3.Host={{ nzb_servers[2].serverhost }}
-      Server3.Port={{ nzb_servers[2].port }}
-      Server3.Username={{ nzb_servers[2].username }}
-      Server3.Password={{ nzb_servers[2].password }} 
-      Server3.JoinGroup=no
-      Server3.Encryption={{ nzb_servers[2].encryption }}
-      Server3.Cipher={{ nzb_servers[2].cipher }}
-      Server3.Connections={{ nzb_servers[2].connections }}
-      Server3.Retention={{ nzb_servers[2].retention }} 
-      Server3.IpVersion=auto
-      Server3.Notes={{ nzb_servers[2].notes }}
-
-    marker_begin: "Start Server 3 Info"
-    marker_end: "End Server 3 Info"
-    insertafter: "# End Server 2 Info ANSIBLE MANAGED BLOCK"
-
+    dest: /var/log/nzbget.log
+    owner: "{{ dvr_username }}"
+    group: "{{ dvr_username }}"
+    mode: 0660
 - name: deploy init script
   copy:
     src: etc/systemd/system/nzbget.service
@@ -211,5 +111,6 @@
 - name: enable nzbget service
   service:
     name: nzbget
-    state: started
+    state: restarted
+    daemon_reload: yes
     enabled: yes

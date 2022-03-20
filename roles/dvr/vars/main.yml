@@ -1,6 +1,17 @@
 ---
+password_salt: "{{ vault_password_salt }}"
+
 samba_users: "{{ vault_samba_users }}"
+
+dvr_credentials: "{{ vault_dvr_user_credentials }}"
+dvr_username: "{{ dvr_credentials.username }}"
+dvr_password: "{{ dvr_credentials.password }}"
+
 vpn_credentials: "{{ vault_vpn_credentials }}"
+vpn_config_path_src: "/home/ansible/openvpn/denmark.ovpn"
+vpn_config_path_dest: "/etc/openvpn/pia.conf"
+
 nzb_creds: "{{ samba_users | selectattr('username', 'equalto', 'nzb') | first }}"
 nzb_servers: "{{ vault_nzb_server }}"
+
 sonarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'sonarr') | first }}"
