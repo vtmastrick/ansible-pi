@@ -74,7 +74,16 @@
     path: "{{ vpn_config_path_src }}"
     regexp: "^auth-user-pass"
     line: "auth-user-pass /etc/openvpn/login"
+    state: present
   changed_when: false
+
+- name: set ignore gateay filter
+  lineinfile:
+    path: "{{ vpn_config_path_src }}"
+    line: 'pull-filter ignore "redirect-gateway def1"'
+    insertafter: "remote-cert-tls server"
+  changed_when: false
+
 
 - name: Get cksum of current config file
   stat:

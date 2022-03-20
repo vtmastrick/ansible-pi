@@ -1,0 +1,14 @@
+[Unit]
+Description=Sonarr on Docker (Ended)
+Requires=docker.service
+After=docker.service
+
+[Service]
+User=sonarr
+Group=sonarr
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/sonarr/ended/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/sonarr/ended/docker-compose.yml down
+
+[Install]
+WantedBy=default.target
