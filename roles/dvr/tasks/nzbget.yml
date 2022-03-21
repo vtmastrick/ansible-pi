@@ -3,6 +3,30 @@
   include_vars:
     file: vault.yml
 
+- name: remove free unrar
+  apt:
+    pkg:
+      - unrar-free
+    state: absent
+
+- name: update repo
+  apt_repository:
+#   repo='deb-src http://archive.raspbian.org/raspbian wheezy main contrib non-free rpi'
+    repo='deb-src http://deb.debian.org/debian/ bullseye main non-free'
+    state=present
+
+- name: update cache
+  apt:
+    update_cache=yes
+
+- name: get unrar source
+  apt:
+    name: unrar-nonfree
+    state: build-dep
+
+- name: build unrar
+  shell: mkdir -p /tmp/unrar && cd /tmp/unrar && rm -f /tmp/unrar/* && sudo apt-get source -b unrar-nonfree -y && sudo  dpkg -i unrar*.deb && rm -rf /tmp/unrar/
+
 - name: create directories
   file:
    path: "{{ item }}"
@@ -31,7 +55,12 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02.private/temp_nzb /mnt/nzb cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid={{ dvr_username }},gid={{ dvr_username }},file_mode=0777,dir_mode=0777,vers=3.1.1"
+   - "//nas02/temp_nzb /mnt/nzb cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid={{ dvr_username }},gid={{ dvr_username }},file_mode=0755,dir_mode=0755,vers=3.1.1"
+
+- name: mount all
+  command: mount -a
+  args:
+    warn: no
 
 - name: install nzbget
   apt:

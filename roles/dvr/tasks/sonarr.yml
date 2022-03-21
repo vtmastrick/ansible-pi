@@ -1,24 +1,49 @@
 ---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: install docker
+  apt:
+    pkg:
+      - docker
+      - docker-compose
+  register: aptupdate
+
+- name: reboot on apt update
+  reboot:
+    test_command: whoami
+  when: aptupdate.changed
+
 - name: create sonarr group
   group:
-    name: sonarr
+    name: "{{ sonarr_creds.username }}"
+    gid: 2000
     state: present
 
 - name: create sonarr user
   user: 
-    name: sonarr
+    name: "{{ sonarr_creds.username }}"
+    uid: 2000
     state: present
-    group: sonarr
+    group: "{{ sonarr_creds.username }}"
+
+- name: add pihole to docker group
+  user:
+    name: "{{ sonarr_creds.username }}"
+    groups: docker
+    append: yes
 
 - name: create directories
   file:
    path: "{{ item }}"
    state: directory
-   owner: sonarr
-   group: sonarr
+   owner: "{{ sonarr_creds.username }}"
+   group: "{{ sonarr_creds.username }}"
   with_items:
    - '/mnt/sonarr'
    - '/mnt/sonarr/tv'
+   - '/mnt/sonarr/downloads'
 
 - name: install necessary packages
   apt:
@@ -37,47 +62,85 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02.local/Videos/tv    /mnt/sonarr/tv cifs username={{ sonarr_creds.username }},password={{ sonarr_creds.password }},iocharset=utf8,uid=sonarr,gid=sonarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/Videos/tv /mnt/sonarr/tv cifs username={{ sonarr_creds.username }},password={{ sonarr_creds.password }},iocharset=utf8,uid=sonarr,gid=sonarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/temp_nzb/downloads/ /mnt/sonarr/downloads cifs username={{sonarr_creds.username }},password={{ sonarr_creds.password }},iocharset=utf8,uid=sonarr,gid=sonarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a
   args:
     warn: no
 
-- name: add mono key
-  apt_key:
-    id: 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-    keyserver: hkp://keyserver.ubuntu.com:80
-    state: present
+- name: get docker image
+  docker_image:
+    name: linuxserver/sonarr
+    source: pull
 
-- name: add mono repo
-  apt_repository:
-    repo: deb https://download.mono-project.com/repo/debian stable-raspbianbuster main
-    state: present
-    filename: mono-official-stable
+- name: create directories for sonarr docker image
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: sonarr
+    group: sonarr
+  with_items:
+    - /srv/docker/sonarr
+    - /srv/docker/sonarr/tv
+    - /srv/docker/sonarr/anime
+    - /srv/docker/sonarr/ended
 
-- name: install mono
-  apt:
-   pkg:
-    - mono-devel
-   state: latest
-   update_cache: true
+- name: copy docker-compose file
+  copy: 
+    src: srv/docker/sonarr/tv/docker-compose.yml
+    dest: /srv/docker/sonarr/tv/docker-compose.yml
+    owner: "{{ sonarr_creds.username }}"
+    group: "{{ sonarr_creds.username }}"
+    remote_src: no
 
-- name: add sonarr key
-  apt_key:
-    id: 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
-    keyserver: keyserver.ubuntu.com
-    state: present
+- name: copy docker-compose file
+  copy:
+    src: srv/docker/sonarr/anime/docker-compose.yml
+    dest: /srv/docker/sonarr/anime/docker-compose.yml
+    owner: "{{ sonarr_creds.username }}"
+    group: "{{ sonarr_creds.username }}"
+    remote_src: no
 
-- name: add sonarr repo
-  apt_repository:
-    repo: deb https://apt.sonarr.tv/debian buster main
-    state: present
-    filename: sonarr
+- name: copy docker-compose file
+  copy:
+    src: srv/docker/sonarr/ended/docker-compose.yml
+    dest: /srv/docker/sonarr/ended/docker-compose.yml
+    owner: "{{ sonarr_creds.username }}"
+    group: "{{ sonarr_creds.username }}"
+    remote_src: no
 
-- name: install sonarr
-  apt:
-    pkg:
-     - sonarr
-    state: latest
-    update_cache: true
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/docker.sonarr.tv.service
+    dest: /etc/systemd/system/docker.sonarr.tv.service
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/docker.sonarr.anime.service
+    dest: /etc/systemd/system/docker.sonarr.anime.service
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/docker.sonarr.ended.service
+    dest: /etc/systemd/system/docker.sonarr.ended.service
+
+- name: enable docker sonarr service
+  service:
+    name: docker.sonarr.tv
+    state: started
+    enabled: yes
+
+- name: enable docker sonarr service
+  service:
+    name: docker.sonarr.anime
+    state: started
+    enabled: yes
+
+- name: enable docker sonarr service
+  service:
+    name: docker.sonarr.ended
+    state: started
+    enabled: yes
+

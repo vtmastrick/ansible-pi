@@ -1,0 +1,14 @@
+[Unit]
+Description=Sonarr on Docker (TV)
+Requires=docker.service
+After=docker.service
+
+[Service]
+User=sonarr
+Group=sonarr
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/sonarr/tv/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/sonarr/tv/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

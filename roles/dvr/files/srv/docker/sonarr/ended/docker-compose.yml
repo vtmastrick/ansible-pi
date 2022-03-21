@@ -1,0 +1,17 @@
+---
+version: "2.1"
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr
+    container_name: sonarr_ended
+    environment:
+      - PUID=2000
+      - PGID=2000
+      - TZ=America/NewYork
+    volumes:
+      - /srv/docker/sonarr/tv/config/:/config
+      - /mnt/sonarr/tv:/mnt/sonarr/tv #optional
+      - /mnt/sonarr/downloads:/srv/data/nzb/downloads #optional
+    ports:
+      - 8987:8989
+    restart: unless-stopped
