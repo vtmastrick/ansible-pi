@@ -1,0 +1,56 @@
+---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: create prowlarr group
+  group:
+    name: "{{ prowlarr_username }}"
+    gid: 2010
+    state: present
+
+- name: create prowlarr user
+  user: 
+    name: "{{ prowlarr_username }}"
+    uid: 2010
+    state: present
+    group: "{{ prowlarr_username }}"
+
+- name: add prowlarr to docker group
+  user:
+    name: "{{ prowlarr_username }}"
+    groups: docker
+    append: yes
+
+- name: get docker image
+  docker_image:
+    name: "linuxserver/prowlarr:develop"
+    source: pull
+
+- name: create directories for prowlarr docker image
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prowlarr
+    group: prowlarr
+  with_items:
+    - /srv/docker/prowlarr
+
+- name: copy docker-compose file
+  copy: 
+    src: srv/docker/prowlarr/docker-compose.yml
+    dest: /srv/docker/prowlarr/docker-compose.yml
+    owner: "{{ prowlarr_username }}"
+    group: "{{ prowlarr_username }}"
+    remote_src: no
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/docker.prowlarr.service
+    dest: /etc/systemd/system/docker.prowlarr.service
+
+- name: enable docker prowlarr service
+  service:
+    name: docker.prowlarr
+    state: started
+    enabled: yes
