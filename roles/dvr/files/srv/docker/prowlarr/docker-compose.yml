@@ -7,7 +7,7 @@ services:
     environment:
       - PUID=2010
       - PGID=2010
-      - TZ=America/NewYork
+      - TZ=America/New_York
     volumes:
       - /srv/docker/prowlarr/config/:/config
     ports:

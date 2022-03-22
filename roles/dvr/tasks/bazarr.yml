@@ -1,0 +1,73 @@
+---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: create bazarr group
+  group:
+    name: "{{ bazarr_username }}"
+    gid: 2020
+    state: present
+
+- name: create bazarr user
+  user: 
+    name: "{{ bazarr_username }}"
+    uid: 2020
+    state: present
+    group: "{{ bazarr_username }}"
+
+- name: add bazarr to docker group
+  user:
+    name: "{{ bazarr_username }}"
+    groups: docker
+    append: yes
+
+- name: get docker image
+  docker_image:
+    name: "linuxserver/bazarr"
+    source: pull
+
+- name: create directories for bazarr docker image
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: bazarr
+    group: bazarr
+  with_items:
+    - /srv/docker/bazarr
+    - /mnt/bazarr
+    - /mnt/bazarr/tv
+    - /mnt/bazarr/movies
+
+- name: copy docker-compose file
+  copy: 
+    src: srv/docker/bazarr/docker-compose.yml
+    dest: /srv/docker/bazarr/docker-compose.yml
+    owner: "{{ bazarr_username }}"
+    group: "{{ bazarr_username }}"
+    remote_src: no
+
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
+  with_items:
+   - "//nas02/Videos/tv /mnt/bazarr/tv cifs username={{ bazarr_creds.username }},password={{ bazarr_creds.password }},iocharset=utf8,uid=bazarr,gid=bazarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/Videos/movies /mnt/bazarr/movies cifs username={{ bazarr_creds.username }},password={{ bazarr_creds.password }},iocharset=utf8,uid=bazarr,gid=bazarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+
+- name: mount all
+  command: mount -a
+  args:
+    warn: no
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/docker.bazarr.service
+    dest: /etc/systemd/system/docker.bazarr.service
+
+- name: enable docker bazarr service
+  service:
+    name: docker.bazarr
+    state: started
+    enabled: yes

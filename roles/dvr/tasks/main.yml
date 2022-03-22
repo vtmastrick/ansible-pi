@@ -26,14 +26,17 @@
 #- name: setup firewall
 #  include: firewall.yml
 
-- name: setup nzbget
-  include: nzbget.yml
+#- name: setup nzbget
+#  include: nzbget.yml
 
-- name: setup sonarr
-  include: sonarr.yml
+#- name: setup sonarr
+#  include: sonarr.yml
 
-- name: setup prowlarr
-  include: prowlarr.yml
+#- name: setup prowlarr
+#  include: prowlarr.yml
+
+- name: setup bazarr
+  include: bazarr.yml
 
 #- name: setup qbt
 #  include: torrent.yml

@@ -1,0 +1,14 @@
+[Unit]
+Description=Bazarr on Docker
+Requires=docker.service
+After=docker.service
+
+[Service]
+User=prowlarr
+Group=prowlarr
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/bazarr/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/bazarr/docker-compose.yml down
+
+[Install]
+WantedBy=default.target
