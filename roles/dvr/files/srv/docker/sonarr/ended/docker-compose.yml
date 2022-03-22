@@ -7,7 +7,7 @@ services:
     environment:
       - PUID=2000
       - PGID=2000
-      - TZ=America/NewYork
+      - TZ=America/New_York
     volumes:
       - /srv/docker/sonarr/ended/config/:/config
       - /mnt/sonarr/tv:/mnt/sonarr/tv #optional

@@ -16,6 +16,12 @@ nzb_servers: "{{ vault_nzb_server }}"
 
 sonarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'sonarr') | first }}"
 
+bazarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'bazarr') | first }}"
+
 prowlarr_credentials: "{{ vault_prowlarr_user_credentials }}"
 prowlarr_username: "{{ prowlarr_credentials.username }}"
 prowlarr_password: "{{ prowlarr_credentials.password }}"
+
+bazarr_credentials: "{{ vault_bazarr_user_credentials }}"
+bazarr_username: "{{ bazarr_credentials.username }}"
+bazarr_password: "{{ bazarr_credentials.password }}"
