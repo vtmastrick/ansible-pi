@@ -9,7 +9,7 @@ services:
       - PGID=2000
       - TZ=America/NewYork
     volumes:
-      - /srv/docker/sonarr/tv/config/:/config
+      - /srv/docker/sonarr/ended/config/:/config
       - /mnt/sonarr/tv:/mnt/sonarr/tv #optional
       - /mnt/sonarr/downloads:/srv/data/nzb/downloads #optional
     ports:

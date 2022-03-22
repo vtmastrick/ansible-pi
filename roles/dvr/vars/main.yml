@@ -15,3 +15,7 @@ nzb_creds: "{{ samba_users | selectattr('username', 'equalto', 'nzb') | first }}
 nzb_servers: "{{ vault_nzb_server }}"
 
 sonarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'sonarr') | first }}"
+
+prowlarr_credentials: "{{ vault_prowlarr_user_credentials }}"
+prowlarr_username: "{{ prowlarr_credentials.username }}"
+prowlarr_password: "{{ prowlarr_credentials.password }}"

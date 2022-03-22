@@ -20,17 +20,20 @@
     update_password: always
     group: "{{ dvr_username }}"
 
-- name: install vpn
-  include: vpn.yml
+#- name: install vpn
+#  include: vpn.yml
 
-- name: setup firewall
-  include: firewall.yml
+#- name: setup firewall
+#  include: firewall.yml
 
 - name: setup nzbget
   include: nzbget.yml
 
 - name: setup sonarr
   include: sonarr.yml
+
+- name: setup prowlarr
+  include: prowlarr.yml
 
 #- name: setup qbt
 #  include: torrent.yml
