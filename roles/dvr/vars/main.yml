@@ -18,6 +18,8 @@ sonarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'sonarr') | fi
 
 bazarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'bazarr') | first }}"
 
+radarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'radarr') | first }}"
+
 prowlarr_credentials: "{{ vault_prowlarr_user_credentials }}"
 prowlarr_username: "{{ prowlarr_credentials.username }}"
 prowlarr_password: "{{ prowlarr_credentials.password }}"
@@ -25,3 +27,8 @@ prowlarr_password: "{{ prowlarr_credentials.password }}"
 bazarr_credentials: "{{ vault_bazarr_user_credentials }}"
 bazarr_username: "{{ bazarr_credentials.username }}"
 bazarr_password: "{{ bazarr_credentials.password }}"
+
+radarr_credentials: "{{ vault_radarr_user_credentials }}"
+radarr_username: "{{ radarr_credentials.username }}"
+radarr_password: "{{ radarr_credentials.password }}"
+

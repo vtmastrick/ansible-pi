@@ -1,0 +1,105 @@
+---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: install docker
+  apt:
+    pkg:
+      - docker
+      - docker-compose
+  register: aptupdate
+
+- name: reboot on apt update
+  reboot:
+    test_command: whoami
+  when: aptupdate.changed
+
+- name: create radarr group
+  group:
+    name: "{{ radarr_creds.username }}"
+    gid: 2050
+    state: present
+
+- name: create radarr user
+  user: 
+    name: "{{ radarr_creds.username }}"
+    uid: 2050
+    state: present
+    group: "{{ radarr_creds.username }}"
+
+- name: add radarr to docker group
+  user:
+    name: "{{ radarr_creds.username }}"
+    groups: docker
+    append: yes
+
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: "{{ radarr_creds.username }}"
+   group: "{{ radarr_creds.username }}"
+  with_items:
+   - '/mnt/radarr'
+   - '/mnt/radarr/movies'
+   - '/mnt/radarr/downloads'
+
+- name: install necessary packages
+  apt:
+    pkg:
+     - gpg
+     - samba
+     - samba-common-bin
+     - cifs-utils
+     - smbclient
+    state: latest
+    update_cache: true
+
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
+  with_items:
+   - "//nas02/Videos/movies /mnt/radarr/movies cifs username={{ radarr_creds.username }},password={{ radarr_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/temp_nzb/downloads/ /mnt/radarr/downloads cifs username={{radarr_creds.username }},password={{ radarr_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+
+- name: mount all
+  command: mount -a
+  args:
+    warn: no
+
+- name: get docker image
+  docker_image:
+    name: linuxserver/radarr
+    source: pull
+
+- name: create directories for radarr docker image
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: radarr
+    group: radarr
+  with_items:
+    - /srv/docker/radarr
+    - /srv/docker/radarr/movies
+
+- name: copy docker-compose file
+  copy: 
+    src: srv/docker/radarr/docker-compose.yml
+    dest: /srv/docker/radarr/docker-compose.yml
+    owner: "{{ radarr_creds.username }}"
+    group: "{{ radarr_creds.username }}"
+    remote_src: no
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/docker.radarr.service
+    dest: /etc/systemd/system/docker.radarr.service
+
+- name: enable docker radarr service
+  service:
+    name: docker.radarr
+    state: restarted
+    enabled: yes
