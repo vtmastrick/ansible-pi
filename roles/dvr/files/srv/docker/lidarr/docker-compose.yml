@@ -1,0 +1,17 @@
+---
+version: "2.1"
+services:
+  sonarr:
+    image: lscr.io/linuxserver/lidarr
+    container_name: lidarr
+    environment:
+      - PUID=2060
+      - PGID=2060
+      - TZ=America/New_York
+    volumes:
+      - /srv/docker/liddarr/config/:/config
+      - /mnt/lidarr/music:/mnt/lidarr/music #optional
+      - /mnt/lidarr/downloads:/srv/data/nzb/downloads #optional
+    ports:
+      - 8686:8686
+    restart: unless-stopped

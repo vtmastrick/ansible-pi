@@ -15,10 +15,9 @@ nzb_creds: "{{ samba_users | selectattr('username', 'equalto', 'nzb') | first }}
 nzb_servers: "{{ vault_nzb_server }}"
 
 sonarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'sonarr') | first }}"
-
 bazarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'bazarr') | first }}"
-
 radarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'radarr') | first }}"
+lidarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'lidarr') | first }}"
 
 prowlarr_credentials: "{{ vault_prowlarr_user_credentials }}"
 prowlarr_username: "{{ prowlarr_credentials.username }}"
@@ -31,4 +30,8 @@ bazarr_password: "{{ bazarr_credentials.password }}"
 radarr_credentials: "{{ vault_radarr_user_credentials }}"
 radarr_username: "{{ radarr_credentials.username }}"
 radarr_password: "{{ radarr_credentials.password }}"
+
+lidarr_credentials: "{{ vault_lidarr_user_credentials }}"
+lidarr_username: "{{ lidarr_credentials.username }}"
+liadarr_password: "{{ lidarr_credentials.password }}"
 
