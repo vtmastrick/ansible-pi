@@ -1,0 +1,104 @@
+---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: install docker
+  apt:
+    pkg:
+      - docker
+      - docker-compose
+  register: aptupdate
+
+- name: reboot on apt update
+  reboot:
+    test_command: whoami
+  when: aptupdate.changed
+
+- name: create readarr group
+  group:
+    name: "{{ readarr_creds.username }}"
+    gid: 2070
+    state: present
+
+- name: create readarr user
+  user: 
+    name: "{{ readarr_creds.username }}"
+    uid: 2070
+    state: present
+    group: "{{ readarr_creds.username }}"
+
+- name: add readarr to docker group
+  user:
+    name: "{{ readarr_creds.username }}"
+    groups: docker
+    append: yes
+
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: "{{ readarr_creds.username }}"
+   group: "{{ readarr_creds.username }}"
+  with_items:
+   - '/mnt/readarr'
+   - '/mnt/readarr/library'
+   - '/mnt/readarr/downloads'
+
+- name: install necessary packages
+  apt:
+    pkg:
+     - gpg
+     - samba
+     - samba-common-bin
+     - cifs-utils
+     - smbclient
+    state: latest
+    update_cache: true
+
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
+  with_items:
+   - "//nas02/Library /mnt/readarr/library cifs username={{ readarr_creds.username }},password={{ readarr_creds.password }},iocharset=utf8,uid=readarr,gid=readarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/temp_nzb/downloads/ /mnt/readarr/downloads cifs username={{readarr_creds.username }},password={{ readarr_creds.password }},iocharset=utf8,uid=readarr,gid=readarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+
+- name: mount all
+  command: mount -a
+  args:
+    warn: no
+
+- name: get docker image
+  docker_image:
+    name: linuxserver/readarr:develop
+    source: pull
+
+- name: create directories for readarr docker image
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: readarr
+    group: readarr
+  with_items:
+    - /srv/docker/readarr
+
+- name: copy docker-compose file
+  copy: 
+    src: srv/docker/readarr/docker-compose.yml
+    dest: /srv/docker/readarr/docker-compose.yml
+    owner: "{{ readarr_creds.username }}"
+    group: "{{ readarr_creds.username }}"
+    remote_src: no
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/docker.readarr.service
+    dest: /etc/systemd/system/docker.readarr.service
+
+- name: enable docker readarr service
+  service:
+    name: docker.readarr
+    state: restarted
+    enabled: yes
