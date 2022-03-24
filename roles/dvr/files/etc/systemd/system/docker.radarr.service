@@ -1,5 +1,5 @@
 [Unit]
-Description=Radarr on Docker (TV)
+Description=Radarr on Docker
 Requires=docker.service
 After=docker.service
 

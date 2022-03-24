@@ -1,0 +1,105 @@
+---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: install docker
+  apt:
+    pkg:
+      - docker
+      - docker-compose
+  register: aptupdate
+
+- name: reboot on apt update
+  reboot:
+    test_command: whoami
+  when: aptupdate.changed
+
+- name: create lidarr group
+  group:
+    name: "{{ lidarr_creds.username }}"
+    gid: 2060
+    state: present
+
+- name: create lidarr user
+  user: 
+    name: "{{ lidarr_creds.username }}"
+    uid: 2060
+    state: present
+    group: "{{ lidarr_creds.username }}"
+
+- name: add lidarr to docker group
+  user:
+    name: "{{ lidarr_creds.username }}"
+    groups: docker
+    append: yes
+
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: "{{ lidarr_creds.username }}"
+   group: "{{ lidarr_creds.username }}"
+  with_items:
+   - '/mnt/lidarr'
+   - '/mnt/lidarr/music'
+   - '/mnt/lidarr/downloads'
+
+- name: install necessary packages
+  apt:
+    pkg:
+     - gpg
+     - samba
+     - samba-common-bin
+     - cifs-utils
+     - smbclient
+    state: latest
+    update_cache: true
+
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
+  with_items:
+   - "//nas02/Music /mnt/lidarr/music cifs username={{ lidarr_creds.username }},password={{ lidarr_creds.password }},iocharset=utf8,uid=lidarr,gid=lidarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/temp_nzb/downloads/ /mnt/lidarr/downloads cifs username={{lidarr_creds.username }},password={{ lidarr_creds.password }},iocharset=utf8,uid=lidarr,gid=lidarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+
+- name: mount all
+  command: mount -a
+  args:
+    warn: no
+
+- name: get docker image
+  docker_image:
+    name: linuxserver/lidarr
+    source: pull
+
+- name: create directories for lidarr docker image
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: lidarr
+    group: lidarr
+  with_items:
+    - /srv/docker/lidarr
+    - /srv/docker/lidarr/music
+
+- name: copy docker-compose file
+  copy: 
+    src: srv/docker/lidarr/docker-compose.yml
+    dest: /srv/docker/lidarr/docker-compose.yml
+    owner: "{{ lidarr_creds.username }}"
+    group: "{{ lidarr_creds.username }}"
+    remote_src: no
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/docker.lidarr.service
+    dest: /etc/systemd/system/docker.lidarr.service
+
+- name: enable docker lidarr service
+  service:
+    name: docker.lidarr
+    state: restarted
+    enabled: yes
