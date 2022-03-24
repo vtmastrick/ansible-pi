@@ -1,0 +1,17 @@
+---
+version: "2.1"
+services:
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=2070
+      - PGID=2070
+      - TZ=America/New_York
+    volumes:
+      - /srv/docker/readarr/config/:/config
+      - /mnt/readarr/library:/library #optional
+      - /mnt/readarr/downloads:/srv/data/nzb/downloads #optional
+    ports:
+      - 8787:8787
+    restart: unless-stopped

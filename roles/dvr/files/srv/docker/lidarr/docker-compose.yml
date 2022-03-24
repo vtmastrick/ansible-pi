@@ -1,7 +1,7 @@
 ---
 version: "2.1"
 services:
-  sonarr:
+  lidarr:
     image: lscr.io/linuxserver/lidarr
     container_name: lidarr
     environment:

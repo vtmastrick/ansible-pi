@@ -4,8 +4,8 @@ Requires=docker.service
 After=docker.service
 
 [Service]
-User=radarr
-Group=radarr
+User=lidarr
+Group=lidarr
 Restart=always
 ExecStart=/usr/bin/docker-compose -f /srv/docker/lidarr/docker-compose.yml up
 ExecStop=/usr/bin/docker-compose -f /srv/docker/lidarr/docker-compose.yml down
