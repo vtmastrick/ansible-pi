@@ -1,0 +1,104 @@
+---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: install docker
+  apt:
+    pkg:
+      - docker
+      - docker-compose
+  register: aptupdate
+
+- name: reboot on apt update
+  reboot:
+    test_command: whoami
+  when: aptupdate.changed
+
+- name: create lazyLibrarian group
+  group:
+    name: "{{ lazyLibrarian_creds.username }}"
+    gid: 2090
+    state: present
+
+- name: create lazyLibrarian user
+  user: 
+    name: "{{ lazyLibrarian_creds.username }}"
+    uid: 2090
+    state: present
+    group: "{{ lazyLibrarian_creds.username }}"
+
+- name: add lazyLibrarian to docker group
+  user:
+    name: "{{ lazyLibrarian_creds.username }}"
+    groups: docker
+    append: yes
+
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: "{{ lazyLibrarian_creds.username }}"
+   group: "{{ lazyLibrarian_creds.username }}"
+  with_items:
+   - '/mnt/lazyLibrarian'
+   - '/mnt/lazyLibrarian/library'
+   - '/mnt/lazyLibrarian/downloads'
+
+- name: install necessary packages
+  apt:
+    pkg:
+     - gpg
+     - samba
+     - samba-common-bin
+     - cifs-utils
+     - smbclient
+    state: latest
+    update_cache: true
+
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
+  with_items:
+   - "//nas02/Library /mnt/lazyLibrarian/library cifs username={{ lazyLibrarian_creds.username }},password={{ lazyLibrarian_creds.password }},iocharset=utf8,uid=lazyLibrarian,gid=lazyLibrarian,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/temp_nzb/downloads/ /mnt/lazyLibrarian/downloads cifs username={{lazyLibrarian_creds.username }},password={{ lazyLibrarian_creds.password }},iocharset=utf8,uid=lazyLibrarian,gid=lazyLibrarian,file_mode=0755,dir_mode=0755,vers=3.1.1"
+
+- name: mount all
+  command: mount -a
+  args:
+    warn: no
+
+- name: get docker image
+  docker_image:
+    name: linuxserver/lazylibrarian
+    source: pull
+
+- name: create directories for lazyLibrarian docker image
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: lazyLibrarian
+    group: lazyLibrarian
+  with_items:
+    - /srv/docker/lazyLibrarian
+
+- name: copy docker-compose file
+  copy: 
+    src: srv/docker/lazyLibrarian/docker-compose.yml
+    dest: /srv/docker/lazyLibrarian/docker-compose.yml
+    owner: "{{ lazyLibrarian_creds.username }}"
+    group: "{{ lazyLibrarian_creds.username }}"
+    remote_src: no
+
+- name: deploy init script
+  copy:
+    src: etc/systemd/system/docker.lazyLibrarian.service
+    dest: /etc/systemd/system/docker.lazyLibrarian.service
+
+- name: enable docker lazyLibrarian service
+  service:
+    name: docker.lazyLibrarian
+    state: disabled
+    enabled: yes

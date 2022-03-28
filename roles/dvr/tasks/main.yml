@@ -26,8 +26,8 @@
 #- name: setup firewall
 #  include: firewall.yml
 
-- name: setup nzbget
-  include: nzbget.yml
+#- name: setup nzbget
+#  include: nzbget.yml
 
 #- name: setup docker
 #  include: docker.yml
@@ -47,8 +47,11 @@
 #- name: setup lidarr
 #  include: lidarr.yml
 
-- name: setup readarr
-  include: readarr.yml
+#- name: setup readarr
+#  include: readarr.yml
+
+- name: setup lazyLibrarian
+  include: lazyLibrarian.yml
 
 #- name: setup qbt
 #  include: torrent.yml

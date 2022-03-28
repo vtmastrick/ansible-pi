@@ -19,6 +19,7 @@ bazarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'bazarr') | fi
 radarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'radarr') | first }}"
 lidarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'lidarr') | first }}"
 readarr_creds: "{{ samba_users | selectattr('username', 'equalto', 'readarr') | first }}"
+lazyLibrarian_creds: "{{ samba_users | selectattr('username', 'equalto', 'lazyLibrarian') | first }}"
 
 prowlarr_credentials: "{{ vault_prowlarr_user_credentials }}"
 prowlarr_username: "{{ prowlarr_credentials.username }}"
@@ -39,3 +40,7 @@ liadarr_password: "{{ lidarr_credentials.password }}"
 readarr_credentials: "{{ vault_readarr_user_credentials }}"
 readarr_username: "{{ readarr_credentials.username }}"
 readarr_password: "{{ readarr_credentials.password }}"
+
+lazyLibrarian_credentials: "{{ vault_lazyLibrarian_user_credentials }}"
+lazyLibrarian_username: "{{ lazyLibrarian_credentials.username }}"
+lazyLibrarian_password: "{{ lazyLibrarian_credentials.password }}"
