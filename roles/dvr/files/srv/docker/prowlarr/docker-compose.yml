@@ -13,3 +13,9 @@ services:
     ports:
       - 9696:9696
     restart: unless-stopped
+
+networks:
+  default:  
+    external:  
+      name: arr_network
+

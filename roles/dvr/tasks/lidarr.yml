@@ -62,8 +62,8 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02/Music /mnt/lidarr/music cifs username={{ lidarr_creds.username }},password={{ lidarr_creds.password }},iocharset=utf8,uid=lidarr,gid=lidarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
-   - "//nas02/temp_nzb/downloads/ /mnt/lidarr/downloads cifs username={{lidarr_creds.username }},password={{ lidarr_creds.password }},iocharset=utf8,uid=lidarr,gid=lidarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/Music /mnt/lidarr/music cifs x-systemd.automount,noauto,_netdev,username={{ lidarr_creds.username }},password={{ lidarr_creds.password }},iocharset=utf8,uid=lidarr,gid=lidarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/temp_nzb/downloads/ /mnt/lidarr/downloads cifs x-systemd.automount,noauto,_netdev,username={{lidarr_creds.username }},password={{ lidarr_creds.password }},iocharset=utf8,uid=lidarr,gid=lidarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a

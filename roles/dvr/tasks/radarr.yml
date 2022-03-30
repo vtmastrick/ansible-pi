@@ -62,8 +62,8 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02/Videos/movies /mnt/radarr/movies cifs username={{ radarr_creds.username }},password={{ radarr_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
-   - "//nas02/temp_nzb/downloads/ /mnt/radarr/downloads cifs username={{radarr_creds.username }},password={{ radarr_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/Videos/movies /mnt/radarr/movies cifs x-systemd.automount,noauto,_netdev,username={{ radarr_creds.username }},password={{ radarr_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/temp_nzb/downloads/ /mnt/radarr/downloads cifs x-systemd.automount,noauto,_netdev,username={{radarr_creds.username }},password={{ radarr_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a
@@ -103,3 +103,5 @@
     name: docker.radarr
     state: restarted
     enabled: yes
+    daemon_reload: yes
+
