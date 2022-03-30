@@ -1,7 +1,7 @@
 [Unit]
 Description=Bazarr on Docker
 Requires=docker.service
-After=docker.service
+After=docker.service mnt-bazarr-tv.mount mnt-bazarr-movies.mount 
 
 [Service]
 User=prowlarr

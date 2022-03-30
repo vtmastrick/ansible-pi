@@ -62,8 +62,8 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02/Library /mnt/lazyLibrarian/library cifs username={{ lazyLibrarian_creds.username }},password={{ lazyLibrarian_creds.password }},iocharset=utf8,uid=lazyLibrarian,gid=lazyLibrarian,file_mode=0755,dir_mode=0755,vers=3.1.1"
-   - "//nas02/temp_nzb/downloads/ /mnt/lazyLibrarian/downloads cifs username={{lazyLibrarian_creds.username }},password={{ lazyLibrarian_creds.password }},iocharset=utf8,uid=lazyLibrarian,gid=lazyLibrarian,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/Library /mnt/lazyLibrarian/library cifs x-systemd.automount,noauto,_netdev,username={{ lazyLibrarian_creds.username }},password={{ lazyLibrarian_creds.password }},iocharset=utf8,uid=lazyLibrarian,gid=lazyLibrarian,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/temp_nzb/downloads/ /mnt/lazyLibrarian/downloads cifs x-systemd.automount,noauto,_netdev,username={{lazyLibrarian_creds.username }},password={{ lazyLibrarian_creds.password }},iocharset=utf8,uid=lazyLibrarian,gid=lazyLibrarian,file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a

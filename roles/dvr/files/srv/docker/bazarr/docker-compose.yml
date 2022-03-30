@@ -15,3 +15,8 @@ services:
     ports:
       - 6767:6767
     restart: unless-stopped
+
+networks:
+  default:
+    external:
+      name: arr_network

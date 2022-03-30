@@ -53,8 +53,8 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02/Videos/tv /mnt/bazarr/tv cifs username={{ bazarr_creds.username }},password={{ bazarr_creds.password }},iocharset=utf8,uid=bazarr,gid=bazarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
-   - "//nas02/Videos/movies /mnt/bazarr/movies cifs username={{ bazarr_creds.username }},password={{ bazarr_creds.password }},iocharset=utf8,uid=bazarr,gid=bazarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/Videos/tv /mnt/bazarr/tv cifs x-systemd.automount,noauto,_netdev,username={{ bazarr_creds.username }},password={{ bazarr_creds.password }},iocharset=utf8,uid=bazarr,gid=bazarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//nas02/Videos/movies /mnt/bazarr/movies cifs x-systemd.automount,noauto,_netdev,username={{ bazarr_creds.username }},password={{ bazarr_creds.password }},iocharset=utf8,uid=bazarr,gid=bazarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a
