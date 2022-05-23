@@ -41,7 +41,7 @@
   apt:
     autoclean: yes
 
-- name: Remove unused dependencies
+- name: Remove unused packages
   apt:
     autoremove: yes
 

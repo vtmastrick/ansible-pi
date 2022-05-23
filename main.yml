@@ -1,5 +1,5 @@
 ---
-- hosts: raspbian
+- hosts: raspbian_os_servers
   become: yes
   become_method: sudo
   roles:
@@ -7,28 +7,29 @@
     - pi
     - raspbian
 
-- hosts: pi-nas
-  become: yes
-  become_method: sudo
-  roles:
-    - global
-    - nas
+#- hosts: pinas
+#  become: yes
+#  become_method: sudo
+#  roles:
+#    - global
+#    - nas
  
-- hosts: pi-dvr
+- hosts: dvr_servers
   become: yes
   become_method: sudo
   roles:
     - global
     - dvr
 
-- hosts: plexUbuntu
+- hosts: plexUbuntu_servers
   become: yes
   become_method: sudo
   roles:
     - global
     - plex-ubuntu
+    - plex
 
-- hosts: pi-hole
+- hosts: pi_hole_servers
   become: yes
   become_method: sudo
   roles:

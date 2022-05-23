@@ -3,18 +3,6 @@
   include_vars:
     file: vault.yml
 
-- name: install docker
-  apt:
-    pkg:
-      - docker
-      - docker-compose
-  register: aptupdate
-
-- name: reboot on apt update
-  reboot:
-    test_command: whoami
-  when: aptupdate.changed
-
 - name: create radarr group
   group:
     name: "{{ radarr_creds.username }}"

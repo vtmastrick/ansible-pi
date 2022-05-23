@@ -1,41 +1,35 @@
 ---
 all:
+  vars:
+    ansible_connection: ssh
+    ansible_user: ansible
   hosts:
-    plex-thinkCentre:
-      ansible_host: plex.private
-    pi-dvr:
-      ansible_host: pidvr.private
-      ansible_host: dvr
-     pi-hole:
-       ansible_host: pi-hole
+    plexUbuntu:
+      ansible_host: plex.local.mastrick.com
+    pidvr:
+      ansible_host: pidvr.local.mastrick.com
+    pihole:
+      ansible_host: pihole.local.mastrick.com
   children:
-    pi:
+    pi_servers:
       hosts:
-        pi-dvr:
-        dvr:
-        pi-hole:
-    raspbian:
+        pidvr:
+        pihole:
+    raspbian_os_servers:
       hosts:
-        pi-nas:
-        pi-dvr:
-        pi-hole:
-    ubuntu:
+        pidvr:
+        pihole:
+    plexUbuntu_servers:
       hosts:
-        plex-thinkCentre:
+        plexUbuntu:
       vars:
         ansible_python_interpreter: /usr/bin/python3   
-    plex:
+    plex_servers:
       hosts:
-        plex-ubuntu:
-    plexUbuntu:
+        plexUbuntu:
+    dvr_servers:
       hosts:
-        plex-thinkCentre:
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
-    pidvr:
+        pidvr:
+    pi_hole_servers:
       hosts:
-        pi-dvr:
-    pihole:
-      hosts:
-        pi-hole:
-
+        pihole:
