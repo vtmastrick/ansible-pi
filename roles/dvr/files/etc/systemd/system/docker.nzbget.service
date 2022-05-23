@@ -1,0 +1,14 @@
+[Unit]
+Description=nzbget on Docker
+Requires=docker.service
+After=docker.service network.target mnt-nzbget.mount
+
+[Service]
+User=nzbget
+Group=nzbget
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/nzbget/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/nzbget/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

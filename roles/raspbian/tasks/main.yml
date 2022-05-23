@@ -15,3 +15,18 @@
   with_items: "{{ system_users }}"
   loop_control:
     label: "{{ item.username }}"
+   
+- name: add dns server entries
+  lineinfile:
+    path: /etc/dhcpcd.conf
+    regexp: "^static domain_name_servers="
+    line: "static domain_name_servers={{ nameserver_ip }}"
+    state: present
+  register: dnsupdate
+  
+- name: restart dns if changed
+  service:
+    name: dhcpcd
+    state: restarted
+  when: dnsupdate.changed
+

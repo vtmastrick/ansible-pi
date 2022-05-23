@@ -3,51 +3,33 @@
   include_vars:
     file: vault.yml
 
-- name: remove free unrar
-  apt:
-    pkg:
-      - unrar-free
-    state: absent
+- name: create nzbget group
+  group:
+    name: "{{ nzbget_username }}"
+    gid: "{{ nzbget_gid }}"
+    state: present
 
-- name: update repo
-  apt_repository:
-#   repo='deb-src http://archive.raspbian.org/raspbian wheezy main contrib non-free rpi'
-    repo='deb-src http://deb.debian.org/debian/ bullseye main non-free'
-    state=present
+- name: create nzbget user
+  user: 
+    name: "{{ nzbget_username }}"
+    uid: "{{ nzbget_uid }}"
+    state: present
+    group: "{{ nzbget_username }}"
 
-- name: update cache
-  apt:
-    update_cache=yes
-
-- name: get unrar source
-  apt:
-    name: unrar-nonfree
-    state: build-dep
-
-- name: build unrar
-  shell: mkdir -p /tmp/unrar && cd /tmp/unrar && rm -f /tmp/unrar/* && sudo apt-get source -b unrar-nonfree -y && sudo  dpkg -i unrar*.deb && rm -rf /tmp/unrar/
+- name: add nzbget to docker group
+  user:
+    name: "{{ nzbget_username }}"
+    groups: docker
+    append: yes
 
 - name: create directories
   file:
    path: "{{ item }}"
    state: directory
-   owner: "{{ dvr_username }}"
-   group: "{{ dvr_username }}"
+   owner: "{{ nzbget_uid }}"
+   group: "{{ nzbget_gid }}"
   with_items:
-   - '/mnt/nzb'
-   - '/opt/etc/nzbget.conf'
-   - '/srv/data/'
-
-- name: create symbolic link for downloads
-  file:
-   src: "{{ item.src }}"
-   dest: "{{ item.dest }}"
-   owner: "{{ dvr_username }}"
-   group: "{{ dvr_username }}"
-   state: link
-  with_items:
-   - src : '/mnt/nzb'
-     dest : '/srv/data/nzb' 
+   - '/mnt/nzbget'
 
 - name: add mounts to fstab
   lineinfile:
@@ -55,91 +37,61 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02/temp_nzb /mnt/nzb cifs username=nzb,password={{ nzb_creds.password }},iocharset=utf8,uid={{ dvr_username }},gid={{ dvr_username }},file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//{{ media_nas_name }}/nzb /mnt/nzbget cifs username={{ nzbget_smb_creds.username }},password={{ nzbget_smb_creds.password }},iocharset=utf8,uid={{ nzbget_uid }},gid={{ nzbget_gid }},file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a
   args:
     warn: no
 
-- name: install nzbget
-  apt:
-    pkg:
-      - nzbget
-    state: latest
-  register: apt_update
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: "{{ nzbget_uid }}"
+   group: "{{ nzbget_gid }}"
+  with_items:
+   - '/mnt/nzbget/downloads'
+   - '/mnt/nzbget/config'   
 
-- name: copy config file to target
+- name: get docker image
+  docker_image:
+    name: "linuxserver/nzbget"
+    source: pull
+
+- name: deploy config script
   copy:
-    src: etc/nzbget.conf
-    dest: ~/nzbget.conf
+    src: mnt/nzbget/config/nzbget.conf
+    dest: /mnt/nzbget/config/nzbget.conf
+    owner: "{{ nzbget_uid }}"
+    group: "{{ nzbget_gid }}" 
+    remote_src: no    
 
-- name: get cksum of current file
-  stat:
-    path: /etc/nzbget.conf
-  register: currentFile
-
-- name: Current SHA1
-  set_fact:
-    f1sha1: "{{ currentFile.stat.checksum if currentFile.stat.exists else 0}}"
-
-- name: get cksum of source file
-  stat:
-    path: ~/nzbget.conf
-  register: sourceFile
-
-- name: Source file SHA1
-  set_fact:
-    f2sha1: "{{ sourceFile.stat.checksum }}"
-
-- name: Config Changed
-  set_fact:
-    configChanged: "{{ f2sha1 != f1sha1 }}"
-
-- name: replace config if changed
-  copy:
-    src:  ~/nzbget.conf
-    dest: /etc/nzbget.conf
-    owner: "{{ dvr_username }}"
-    group: "{{ dvr_username }}"  
-    remote_src: yes
-  when: configChanged|bool
-
-- name: set permissions for config
+- name: create directories for nzbget docker image
   file:
-    dest: /etc/nzbget.conf
-    owner: "{{ dvr_username }}"
-    group: "{{ dvr_username }}"
+    path: "{{ item }}"
+    state: directory
+    owner: nzbget
+    group: nzbget
+  with_items:
+    - /srv/docker/nzbget
 
-- name: set permissions for nzbget
-  file:
-    dest: /usr/bin/nzbget
-    owner: "{{ dvr_username }}"
-    group: "{{ dvr_username }}"
-    mode: 0754  
+- name: copy docker-compose file
+  copy: 
+    src: srv/docker/nzbget/docker-compose.yml
+    dest: /srv/docker/nzbget/docker-compose.yml
+    owner: "{{ nzbget_uid }}"
+    group: "{{ nzbget_gid }}"
+    remote_src: no
 
-- name: set permissions for nzbget ui
-  file:
-    dest: /usr/share/nzbget
-    owner: "{{ dvr_username }}"
-    group: "{{ dvr_username }}"
-    mode: 0754
-    recurse: yes
-   
-- name: set permissions for log
-  file:
-    dest: /var/log/nzbget.log
-    owner: "{{ dvr_username }}"
-    group: "{{ dvr_username }}"
-    mode: 0660
 - name: deploy init script
   copy:
-    src: etc/systemd/system/nzbget.service
-    dest: /etc/systemd/system/nzbget.service
+    src: etc/systemd/system/docker.nzbget.service
+    dest: /etc/systemd/system/docker.nzbget.service
 
-- name: enable nzbget service
+- name: enable docker nzbget service
   service:
-    name: nzbget
+    name: docker.nzbget
     state: restarted
-    daemon_reload: yes
     enabled: yes
+    daemon_reload: yes    
