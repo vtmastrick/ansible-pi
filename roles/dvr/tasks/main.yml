@@ -20,43 +20,43 @@
     update_password: always
     group: "{{ dvr_username }}"
 
-- name: setup docker
-  include: docker.yml
+#- name: setup docker
+#  include: docker.yml
 
-- name: Create the arr network
-  docker_network:
-    name: arr_network
+#- name: Create the arr network
+#  docker_network:
+#    name: arr_network
 
 - name: setup nzbget
   include: nzbget.yml
 
-#- name: install vpn
-#  include: vpn.yml
-
-#- name: setup firewall
-#  include: firewall.yml
-
-
-#- name: setup sonarr
-#  include: sonarr.yml
-
 #- name: setup prowlarr
 #  include: prowlarr.yml
 
-#- name: setup bazarr
-#  include: bazarr.yml
+- name: setup sonarr
+  include: sonarr.yml
+
+###- name: setup bazarr
+###  include: bazarr.yml
 
 #- name: setup radarr
 #  include: radarr.yml
 
-#- name: setup lidarr
-#  include: lidarr.yml
+###- name: setup lidarr
+###  include: lidarr.yml
 
-#- name: setup readarr
-#  include: readarr.yml
+###- name: setup readarr
+###  include: readarr.yml
 
-#- name: setup lazyLibrarian
-#  include: lazyLibrarian.yml
+###- name: setup lazyLibrarian
+###  include: lazyLibrarian.yml
 
-#- name: setup qbt
-#  include: torrent.yml
+###- name: setup qbt
+###  include: torrent.yml
+
+###- name: install vpn
+###  include: vpn.yml
+
+###- name: setup firewall
+###  include: firewall.yml
+

@@ -52,5 +52,6 @@
 - name: enable docker prowlarr service
   service:
     name: docker.prowlarr
-    state: started
+    state: restarted
     enabled: yes
+    daemon_reload: yes

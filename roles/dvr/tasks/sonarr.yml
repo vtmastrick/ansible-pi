@@ -17,20 +17,20 @@
 
 - name: create sonarr group
   group:
-    name: "{{ sonarr_creds.username }}"
-    gid: 2000
+    name: "{{ sonarr_username }}"
+    gid: "{{ sonarr_id }}"
     state: present
 
 - name: create sonarr user
   user: 
-    name: "{{ sonarr_creds.username }}"
-    uid: 2000
+    name: "{{ sonarr_username }}"
+    uid: "{{ sonarr_id }}"
     state: present
-    group: "{{ sonarr_creds.username }}"
+    group: "{{ sonarr_username }}"
 
 - name: add pihole to docker group
   user:
-    name: "{{ sonarr_creds.username }}"
+    name: "{{ sonarr_username }}"
     groups: docker
     append: yes
 
@@ -38,8 +38,8 @@
   file:
    path: "{{ item }}"
    state: directory
-   owner: "{{ sonarr_creds.username }}"
-   group: "{{ sonarr_creds.username }}"
+   owner: "{{ sonarr_username }}"
+   group: "{{ sonarr_username }}"
   with_items:
    - '/mnt/sonarr'
    - '/mnt/sonarr/tv'
@@ -62,8 +62,8 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02/Videos/tv /mnt/sonarr/tv cifs x-systemd.automount,noauto,_netdev,username={{ sonarr_creds.username }},password={{ sonarr_creds.password }},iocharset=utf8,uid=sonarr,gid=sonarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
-   - "//nas02/temp_nzb/downloads/ /mnt/sonarr/downloads cifs x-systemd.automount,noauto,_netdev,username={{sonarr_creds.username }},password={{ sonarr_creds.password }},iocharset=utf8,uid=sonarr,gid=sonarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//{{ media_nas_name }}/Videos/tv /mnt/sonarr/tv cifs x-systemd.automount,noauto,_netdev,username={{ sonarr_smb_creds.username }},password={{ sonarr_smb_creds.password }},iocharset=utf8,uid={{ sonarr_id }},gid={{ sonarr_id }},file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//{{ media_nas_name }}/nzb/downloads/ /mnt/sonarr/downloads cifs x-systemd.automount,noauto,_netdev,username={{ sonarr_smb_creds.username }},password={{ sonarr_smb_creds.password }},iocharset=utf8,uid={{ sonarr_id }},gid={{ sonarr_id }},file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a
@@ -79,8 +79,8 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: sonarr
-    group: sonarr
+    owner: "{{ sonarr_id }}"
+    group: "{{ sonarr_id }}"
   with_items:
     - /srv/docker/sonarr
     - /srv/docker/sonarr/tv
@@ -91,24 +91,24 @@
   copy: 
     src: srv/docker/sonarr/tv/docker-compose.yml
     dest: /srv/docker/sonarr/tv/docker-compose.yml
-    owner: "{{ sonarr_creds.username }}"
-    group: "{{ sonarr_creds.username }}"
+    owner: "{{ sonarr_username }}"
+    group: "{{ sonarr_username }}"
     remote_src: no
 
 - name: copy docker-compose file
   copy:
     src: srv/docker/sonarr/anime/docker-compose.yml
     dest: /srv/docker/sonarr/anime/docker-compose.yml
-    owner: "{{ sonarr_creds.username }}"
-    group: "{{ sonarr_creds.username }}"
+    owner: "{{ sonarr_username }}"
+    group: "{{ sonarr_username }}"
     remote_src: no
 
 - name: copy docker-compose file
   copy:
     src: srv/docker/sonarr/ended/docker-compose.yml
     dest: /srv/docker/sonarr/ended/docker-compose.yml
-    owner: "{{ sonarr_creds.username }}"
-    group: "{{ sonarr_creds.username }}"
+    owner: "{{ sonarr_username }}"
+    group: "{{ sonarr_username }}"
     remote_src: no
 
 - name: deploy init script
@@ -129,21 +129,21 @@
 - name: enable docker sonarr service
   service:
     name: docker.sonarr.tv
-    state: started
+    state: restarted
     enabled: yes
     daemon_reload: yes
 
 - name: enable docker sonarr service
   service:
     name: docker.sonarr.anime
-    state: started
+    state: restarted
     enabled: yes
     daemon_reload: yes
 
 - name: enable docker sonarr service
   service:
     name: docker.sonarr.ended
-    state: started
+    state: restarted
     enabled: yes
     daemon_reload: yes
 

@@ -11,10 +11,13 @@ services:
     volumes:
       - /srv/docker/readarr/config/:/config
       - /mnt/readarr/library:/library #optional
-      - /mnt/readarr/downloads:/srv/data/nzb/downloads #optional
+      - /mnt/readarr/downloads:/data/downloads #optional
     ports:
       - 8787:8787
     restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1         
 
 networks:
   default:

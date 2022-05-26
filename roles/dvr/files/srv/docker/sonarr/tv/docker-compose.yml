@@ -10,11 +10,14 @@ services:
       - TZ=America/New_York
     volumes:
       - /srv/docker/sonarr/tv/config/:/config
-      - /mnt/sonarr/tv:/mnt/sonarr/tv #optional
-      - /mnt/sonarr/downloads:/srv/data/nzb/downloads #optional
+      - /mnt/sonarr/tv:/data/tv #optional
+      - /mnt/sonarr/downloads:/data/downloads #optional
     ports:
       - 8989:8989
     restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1        
 
 networks:
   default:

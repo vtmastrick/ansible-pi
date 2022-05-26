@@ -11,10 +11,13 @@ services:
     volumes:
       - /srv/docker/radarr/config/:/config
       - /mnt/radarr/movies:/mnt/radarr/movies #optional
-      - /mnt/radarr/downloads:/srv/data/nzb/downloads #optional
+      - /mnt/radarr/downloads:/data/downloads #optional
     ports:
       - 7878:7878
     restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1    
 
 networks:
   default:
