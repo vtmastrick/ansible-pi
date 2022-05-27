@@ -1,22 +1,29 @@
 ---
+- name: remove packages
+  apt:
+    pkg:
+      - rpimonitor
+    state: absent
+    update_cache: false
+
+- name: add key for rpi monitor
+  apt_key:
+    id: 2C0D3C0F
+    keyserver: keyserver.ubuntu.com
+    state: absent
+
+- name: add rpi monitor repo
+  apt_repository:
+    repo: deb http://giteduberger.fr rpimonitor/
+    state: absent
+    filename: rpimonitor
+
 - name: install packages
   apt:
     pkg:
       - gpg
     state: latest
     update_cache: true
-
-- name: add key for rpi monitor
-  apt_key:
-    id: 2C0D3C0F
-    keyserver: keyserver.ubuntu.com
-    state: present
-
-- name: add rpi monitor repo
-  apt_repository:
-    repo: deb http://giteduberger.fr rpimonitor/
-    state: present
-    filename: rpimonitor
 
 - name: install packages
   apt:
@@ -26,7 +33,6 @@
       - samba-common-bin
       - cifs-utils
       - smbclient
-      - rpimonitor
       - unzip
     state: latest
     update_cache: true
