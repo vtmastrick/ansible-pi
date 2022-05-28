@@ -1,7 +1,6 @@
 [Unit]
 Description=Prowlarr on Docker
-Requires=docker.service
-After=docker.service
+Requires=docker.service docker.nzbget.service
 
 [Service]
 User=prowlarr

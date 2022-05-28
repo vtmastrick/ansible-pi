@@ -5,20 +5,20 @@
 
 - name: create radarr group
   group:
-    name: "{{ radarr_creds.username }}"
+    name: "{{ radarr_username }}"
     gid: 2050
     state: present
 
 - name: create radarr user
   user: 
-    name: "{{ radarr_creds.username }}"
+    name: "{{ radarr_username }}"
     uid: 2050
     state: present
-    group: "{{ radarr_creds.username }}"
+    group: "{{ radarr_username }}"
 
 - name: add radarr to docker group
   user:
-    name: "{{ radarr_creds.username }}"
+    name: "{{ radarr_username }}"
     groups: docker
     append: yes
 
@@ -26,8 +26,8 @@
   file:
    path: "{{ item }}"
    state: directory
-   owner: "{{ radarr_creds.username }}"
-   group: "{{ radarr_creds.username }}"
+   owner: "{{ radarr_username }}"
+   group: "{{ radarr_username }}"
   with_items:
    - '/mnt/radarr'
    - '/mnt/radarr/movies'
@@ -50,8 +50,8 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02/Videos/movies /mnt/radarr/movies cifs x-systemd.automount,noauto,_netdev,username={{ radarr_creds.username }},password={{ radarr_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
-   - "//nas02/temp_nzb/downloads/ /mnt/radarr/downloads cifs x-systemd.automount,noauto,_netdev,username={{radarr_creds.username }},password={{ radarr_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//{{ media_nas_name }}/Videos/movies /mnt/radarr/movies cifs username={{ radarr_smb_creds.username }},password={{ radarr_smb_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//{{ media_nas_name }}/nzb/downloads /mnt/radarr/downloads cifs username={{ radarr_smb_creds.username }},password={{ radarr_smb_creds.password }},iocharset=utf8,uid=radarr,gid=radarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a
@@ -67,8 +67,8 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: radarr
-    group: radarr
+    owner: "{{ radarr_username }}"
+    group: "{{ radarr_username }}"
   with_items:
     - /srv/docker/radarr
     - /srv/docker/radarr/movies
@@ -77,8 +77,8 @@
   copy: 
     src: srv/docker/radarr/docker-compose.yml
     dest: /srv/docker/radarr/docker-compose.yml
-    owner: "{{ radarr_creds.username }}"
-    group: "{{ radarr_creds.username }}"
+    owner: "{{ radarr_username }}"
+    group: "{{ radarr_username }}"
     remote_src: no
 
 - name: deploy init script

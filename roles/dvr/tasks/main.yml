@@ -3,45 +3,32 @@
   include_vars:
     file: vault.yml
 
-- name: create group
-  group:
-    name: dvr
-    state: present
+#- name: setup docker
+#  include: docker.yml
 
-- name: salt password
-  set_fact:
-    salted_password: "{{ dvr_password | password_hash('sha512', password_salt) }}"
-    run_once: true
+#- name: Create the arr network
+#  docker_network:
+#    name: arr_network
 
-- name: create user
-  user:
-    name: "{{ dvr_username }}"
-    password: "{{ salted_password }}"
-    update_password: always
-    group: "{{ dvr_username }}"
+#- name: setup nzbget
+#  include: nzbget.yml
 
-- name: setup docker
-  include: docker.yml
-
-- name: Create the arr network
-  docker_network:
-    name: arr_network
-
-- name: setup nzbget
-  include: nzbget.yml
-
-#- name: install vpn
-#  include: vpn.yml
-
-#- name: setup firewall
-#  include: firewall.yml
-
-
-#- name: setup sonarr
-#  include: sonarr.yml
+- name: setup *arr
+  include: arr.yml
+  vars:
+    my_vars: {{ item }}
+  with_items:
+    - "{{ prowlarr_settings }}"
+    - "{{ sonarr_tv_settings }}"
+    - "{{ sonarr_anime_settings }}"
+    - "{{ sonarr_ended_settings }}"
+    - "{{ sonarr_bazarr_settings }}"
 
 #- name: setup prowlarr
 #  include: prowlarr.yml
+
+#- name: setup sonarr
+#  include: sonarr.yml
 
 #- name: setup bazarr
 #  include: bazarr.yml
@@ -55,8 +42,15 @@
 #- name: setup readarr
 #  include: readarr.yml
 
-#- name: setup lazyLibrarian
-#  include: lazyLibrarian.yml
+###- name: setup lazyLibrarian
+###  include: lazyLibrarian.yml
 
-#- name: setup qbt
-#  include: torrent.yml
+###- name: setup qbt
+###  include: torrent.yml
+
+###- name: install vpn
+###  include: vpn.yml
+
+###- name: setup firewall
+###  include: firewall.yml
+

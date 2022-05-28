@@ -12,10 +12,13 @@ services:
     volumes:
       - /srv/docker/lazyLibrarian/config/:/config
       - /mnt/lazyLibrarian/library:/mnt/lazyLibrarian/library #optional
-      - /mnt/lazyLibrarian/downloads:/srv/data/nzb/downloads #optional
+      - /mnt/lazyLibrarian/downloads:/data/downloads #optional
     ports:
       - 5299:5299
     restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1         
 
 networks:
   default:

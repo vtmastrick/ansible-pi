@@ -1,7 +1,6 @@
 [Unit]
 Description=Radarr on Docker
-Requires=docker.service
-After=docker.service mnt-radarr-downloads.mount mnt-radarr-movies.mount
+Requires=docker.service docker.prowlarr.service docker.nzbget.service mnt-radarr-downloads.mount mnt-radarr-movies.mount
 
 [Service]
 User=radarr

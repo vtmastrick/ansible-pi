@@ -10,11 +10,14 @@ services:
       - TZ=America/New_York
     volumes:
       - /srv/docker/bazarr/config/:/config
-      - /mnt/bazarr/tv:/mnt/tv #optional
-      - /mnt/bazarr/movies:/movies/tv #optional
+      - /mnt/bazarr/tv:/data/tv #optional
+      - /mnt/bazarr/movies:/data/movies/ #optional
     ports:
       - 6767:6767
     restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1         
 
 networks:
   default:

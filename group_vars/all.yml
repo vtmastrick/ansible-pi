@@ -1,5 +1,5 @@
 ---
 #nameserver_ip: "10.10.125.69"
 nameserver_ip: "1.1.1.1"
-domain_name: "local.mastrick.com"
+domain_name: "local"
 media_nas_name: "nas02.{{ domain_name }}"

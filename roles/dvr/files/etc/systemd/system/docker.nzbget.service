@@ -1,7 +1,6 @@
 [Unit]
 Description=nzbget on Docker
-Requires=docker.service
-After=docker.service network.target mnt-nzbget.mount
+Requires=docker.service network.target mnt-nzbget.mount
 
 [Service]
 User=nzbget

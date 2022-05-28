@@ -3,34 +3,22 @@
   include_vars:
     file: vault.yml
 
-- name: install docker
-  apt:
-    pkg:
-      - docker
-      - docker-compose
-  register: aptupdate
-
-- name: reboot on apt update
-  reboot:
-    test_command: whoami
-  when: aptupdate.changed
-
 - name: create readarr group
   group:
-    name: "{{ readarr_creds.username }}"
+    name: "{{ readarr_username }}"
     gid: 2070
     state: present
 
 - name: create readarr user
   user: 
-    name: "{{ readarr_creds.username }}"
+    name: "{{ readarr_username }}"
     uid: 2070
     state: present
-    group: "{{ readarr_creds.username }}"
+    group: "{{ readarr_username }}"
 
 - name: add readarr to docker group
   user:
-    name: "{{ readarr_creds.username }}"
+    name: "{{ readarr_username }}"
     groups: docker
     append: yes
 
@@ -38,8 +26,8 @@
   file:
    path: "{{ item }}"
    state: directory
-   owner: "{{ readarr_creds.username }}"
-   group: "{{ readarr_creds.username }}"
+   owner: "{{ readarr_username }}"
+   group: "{{ readarr_username }}"
   with_items:
    - '/mnt/readarr'
    - '/mnt/readarr/library'
@@ -62,8 +50,8 @@
    line: "{{ item }}"
    create: yes
   with_items:
-   - "//nas02/Library /mnt/readarr/library cifs username={{ readarr_creds.username }},password={{ readarr_creds.password }},iocharset=utf8,uid=readarr,gid=readarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
-   - "//nas02/temp_nzb/downloads/ /mnt/readarr/downloads cifs username={{readarr_creds.username }},password={{ readarr_creds.password }},iocharset=utf8,uid=readarr,gid=readarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//{{ media_nas_name }}/Library /mnt/readarr/library cifs username={{ readarr_smb_creds.username }},password={{ readarr_smb_creds.password }},iocharset=utf8,uid=readarr,gid=readarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
+   - "//{{ media_nas_name }}/nzb/downloads /mnt/readarr/downloads cifs username={{ readarr_smb_creds.username }},password={{ readarr_smb_creds.password }},iocharset=utf8,uid=readarr,gid=readarr,file_mode=0755,dir_mode=0755,vers=3.1.1"
 
 - name: mount all
   command: mount -a
@@ -79,8 +67,8 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: readarr
-    group: readarr
+    owner: "{{ readarr_username }}"
+    group: "{{ readarr_username }}"
   with_items:
     - /srv/docker/readarr
 
@@ -88,8 +76,8 @@
   copy: 
     src: srv/docker/readarr/docker-compose.yml
     dest: /srv/docker/readarr/docker-compose.yml
-    owner: "{{ readarr_creds.username }}"
-    group: "{{ readarr_creds.username }}"
+    owner: "{{ readarr_username }}"
+    group: "{{ readarr_username }}"
     remote_src: no
 
 - name: deploy init script

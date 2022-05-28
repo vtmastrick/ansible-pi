@@ -9,12 +9,15 @@ services:
       - PGID=2060
       - TZ=America/New_York
     volumes:
-      - /srv/docker/liddarr/config/:/config
-      - /mnt/lidarr/music:/mnt/lidarr/music #optional
-      - /mnt/lidarr/downloads:/srv/data/nzb/downloads #optional
+      - /srv/docker/lidarr/config/:/config
+      - /mnt/lidarr/music:/data/music #optional
+      - /mnt/lidarr/downloads:/data/downloads #optional
     ports:
       - 8686:8686
     restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1         
 
 networks:
   default:
