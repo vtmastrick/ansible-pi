@@ -1,7 +1,6 @@
 [Unit]
 Description=Sonarr on Docker (Anime)
-Requires=docker.service
-After=docker.service mnt-sonarr-downloads.mount mnt-sonarr-tv.mount
+Requires=docker.service docker.prowlarr.service docker.nzbget.service mnt-sonarr-downloads.mount mnt-sonarr-tv.mount
 
 [Service]
 User=sonarr

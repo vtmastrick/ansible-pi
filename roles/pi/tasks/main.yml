@@ -6,24 +6,22 @@
     state: absent
     update_cache: false
 
-- name: add key for rpi monitor
+- name: remove key for rpi monitor
   apt_key:
     id: 2C0D3C0F
     keyserver: keyserver.ubuntu.com
     state: absent
 
-- name: add rpi monitor repo
+- name: remove rpi monitor repo
   apt_repository:
     repo: deb http://giteduberger.fr rpimonitor/
     state: absent
     filename: rpimonitor
 
-- name: install packages
+- name: Cleanup apt
   apt:
-    pkg:
-      - gpg
-    state: latest
-    update_cache: true
+    autoclean: yes
+    autoremove: yes
 
 - name: install packages
   apt:
@@ -34,22 +32,19 @@
       - cifs-utils
       - smbclient
       - unzip
+      - gpg
+      - pip
     state: latest
-    update_cache: true
 
 - name: ensure os is up to date
   apt:
-    update_cache: yes
     upgrade: full
-    cache_valid_time: 300
 
-- name: Remove packages from cache
-  apt:
-    autoclean: yes
-
-- name: Remove unused packages
-  apt:
-    autoremove: yes
+- name: Install glances python package
+  pip:
+    name:
+      - glances
+      - bottle
 
 - name: remove other localhost definitions
   lineinfile:
