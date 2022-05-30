@@ -10,40 +10,43 @@
 #  docker_network:
 #    name: arr_network
 
-#- name: setup nzbget
-#  include: nzbget.yml
+- name: increase swap space
+  include: swapspace.yml
 
+- name: install necessary packages
+  apt:
+    pkg:
+     - gpg
+     - samba
+     - samba-common-bin
+     - cifs-utils
+     - smbclient
+    state: latest
+    
+#- name: setup nzbget
+#  include: nzbget.yml    
+  
 - name: setup *arr
   include: arr.yml
   vars:
-    my_vars: {{ item }}
+    settings: "{{ settings_object }}"
+  loop_control:
+    loop_var: settings_object
   with_items:
-    - "{{ prowlarr_settings }}"
+#    - "{{ prowlarr_settings }}"
+    - "{{ radarr_settings }}"
+    - "{{ lidarr_settings }}"    
     - "{{ sonarr_tv_settings }}"
     - "{{ sonarr_anime_settings }}"
     - "{{ sonarr_ended_settings }}"
-    - "{{ sonarr_bazarr_settings }}"
+    - "{{ readarr_settings }}"        
+#    - "{{ sonarr_bazarr_settings }}"
 
 #- name: setup prowlarr
 #  include: prowlarr.yml
 
-#- name: setup sonarr
-#  include: sonarr.yml
-
 #- name: setup bazarr
 #  include: bazarr.yml
-
-#- name: setup radarr
-#  include: radarr.yml
-
-#- name: setup lidarr
-#  include: lidarr.yml
-
-#- name: setup readarr
-#  include: readarr.yml
-
-###- name: setup lazyLibrarian
-###  include: lazyLibrarian.yml
 
 ###- name: setup qbt
 ###  include: torrent.yml
