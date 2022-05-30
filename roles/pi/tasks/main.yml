@@ -27,12 +27,6 @@
   apt:
     pkg:
       - aptitude
-      - samba
-      - samba-common-bin
-      - cifs-utils
-      - smbclient
-      - unzip
-      - gpg
       - pip
     state: latest
 
@@ -45,6 +39,8 @@
     name:
       - glances
       - bottle
+
+#MJS : Need glances service
 
 - name: remove other localhost definitions
   lineinfile:

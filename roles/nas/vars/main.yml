@@ -1,2 +1,0 @@
----
-samba_users: "{{ vault_samba_users }}"

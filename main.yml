@@ -1,31 +1,32 @@
 ---
+- hosts: all #MJS - should be linux
+  become: yes
+  become_method: sudo
+  roles:
+#    - global
+
+- hosts: raspbian_os_servers #MJS - should be pi
+  become: yes
+  become_method: sudo
+  roles:
+#    - pi
+
 - hosts: raspbian_os_servers
   become: yes
   become_method: sudo
   roles:
-    - global
-    - pi
-    - raspbian
+#    - raspbian
 
-#- hosts: pinas
-#  become: yes
-#  become_method: sudo
-#  roles:
-#    - global
-#    - nas
- 
 - hosts: dvr_servers
   become: yes
   become_method: sudo
   roles:
-    - global
     - dvr
 
 - hosts: plexUbuntu_servers
   become: yes
   become_method: sudo
   roles:
-    - global
     - plex-ubuntu
     - plex
 
@@ -33,5 +34,4 @@
   become: yes
   become_method: sudo
   roles:
-    - global
     - pi-hole
