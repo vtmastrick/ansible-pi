@@ -1,0 +1,13 @@
+[Unit]
+Description=Mylar3 on Docker
+Requires=docker.service docker.prowlarr.service docker.nzbget.service mnt-mylar3-downloads.mount mnt-mylar3-comics.mount
+
+[Service]
+User=mylar3
+Group=mylar3
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/mylar3/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/mylar3/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

@@ -8,11 +8,26 @@ vpn_config_path_src: "/home/ansible/openvpn/denmark.ovpn"
 vpn_config_path_dest: "/etc/openvpn/pia.conf"
 
 nzbget_smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'nzb') | first }}"
-bazarr_smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'bazarr') | first }}"
 sonarr_smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'sonarr') | first }}"
 
 conf_swapfactor: 2
 conf_maxswap: 2048
+
+nzbget_credentials: "{{ vault_nzbget_user_credentials }}"
+nzbget_username: "{{ nzbget_credentials.username }}"
+nzbget_password: "{{ nzbget_credentials.password }}"
+nzbget_uid: "2080"
+nzbget_gid: "2080"
+
+prowlarr_settings:
+  username: "prowlarr"
+  uid: "2010"
+  groupname: "prowlarr"
+  gid: "2010"
+  image_name: "linuxserver/prowlarr:develop"
+  docker_dir: "srv/docker/prowlarr"
+  service_name: "docker.prowlarr"
+  systemd_script: "docker.prowlarr.service" 
 
 sonarr_ended_settings:
   username: "sonarr"
@@ -20,8 +35,15 @@ sonarr_ended_settings:
   groupname: "sonarr"
   gid: "2000"
   smb_creds: "{{ sonarr_smb_creds }}"
-  smb_dir: "Videos/tv"
-  data_dir_name: "tv"
+  mnt_dirs:
+    - "/mnt/sonarr"
+    - "/mnt/sonarr/tv"
+    - "/mnt/sonarr/downloads"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Videos/tv"
+      target: "/mnt/sonarr/tv"
+    - source: "//{{ media_nas_name }}/nzb/downloads"
+      target: "/mnt/sonarr/downloads"
   image_name: "linuxserver/sonarr"
   docker_dir: "srv/docker/sonarr/ended"
   service_name: "docker.sonarr.ended"
@@ -33,8 +55,15 @@ sonarr_tv_settings:
   groupname: "sonarr"
   gid: "2000"
   smb_creds: "{{ sonarr_smb_creds }}"
-  smb_dir: "Videos/tv"
-  data_dir_name: "tv"
+  mnt_dirs:
+    - "/mnt/sonarr"
+    - "/mnt/sonarr/tv"
+    - "/mnt/sonarr/downloads"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Videos/tv"
+      target: "/mnt/sonarr/tv"
+    - source: "//{{ media_nas_name }}/nzb/downloads"
+      target: "/mnt/sonarr/downloads"  
   image_name: "linuxserver/sonarr"
   docker_dir: "srv/docker/sonarr/tv"
   service_name: "docker.sonarr.tv"
@@ -46,12 +75,59 @@ sonarr_anime_settings:
   groupname: "sonarr"
   gid: "2000"
   smb_creds: "{{ sonarr_smb_creds }}"
-  smb_dir: "Videos/tv"
-  data_dir_name: "tv"
+  mnt_dirs:
+    - "/mnt/sonarr"
+    - "/mnt/sonarr/tv"
+    - "/mnt/sonarr/downloads"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Videos/tv"
+      target: "/mnt/sonarr/tv"
+    - source: "//{{ media_nas_name }}/nzb/downloads"
+      target: "/mnt/sonarr/downloads"  
   image_name: "linuxserver/sonarr"
   docker_dir: "srv/docker/sonarr/anime"
   service_name: "docker.sonarr.anime"
   systemd_script: "docker.sonarr.anime.service"    
+
+bazarr_settings:
+  username: "bazarr"
+  uid: "2020"
+  groupname: "bazarr"
+  gid: "2020"
+  smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'bazarr') | first }}" 
+  mnt_dirs:
+    - "/mnt/bazarr"
+    - "/mnt/bazarr/tv"
+    - "/mnt/bazarr/movies"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Videos/movies"
+      target: "/mnt/bazarr/movies"
+    - source: "//{{ media_nas_name }}/Videos/tv"
+      target: "/mnt/bazarr/tv"  
+  image_name: "linuxserver/bazarr"
+  docker_dir: "srv/docker/bazarr"
+  service_name: "docker.bazarr"
+  systemd_script: "docker.bazarr.service"   
+
+mylar_settings:
+  username: "mylar3"
+  uid: "2030"
+  groupname: "mylar3"
+  gid: "2030"
+  smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'mylar3') | first }}" 
+  mnt_dirs:
+    - "/mnt/mylar3"
+    - "/mnt/mylar3/comics"
+    - "/mnt/mylar3/downloads"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Library/comics"
+      target: "/mnt/mylar3/comics"
+    - source: "//{{ media_nas_name }}/nzb/downloads"
+      target: "/mnt/mylar3/downloads"   
+  image_name: "linuxserver/mylar3:latest"
+  docker_dir: "srv/docker/mylar3"
+  service_name: "docker.mylar3"
+  systemd_script: "docker.mylar3.service"
   
 radarr_settings:
   username: "radarr"
@@ -59,8 +135,15 @@ radarr_settings:
   groupname: "radarr"
   gid: "2050"
   smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'radarr') | first }}" 
-  smb_dir: "Videos/movies"
-  data_dir_name: "movies"
+  mnt_dirs:
+    - "/mnt/radarr"
+    - "/mnt/radarr/movies"
+    - "/mnt/radarr/downloads"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Videos/movies"
+      target: "/mnt/radarr/movies"
+    - source: "//{{ media_nas_name }}/nzb/downloads"
+      target: "/mnt/radarr/downloads"  
   image_name: "linuxserver/radarr"
   docker_dir: "srv/docker/radarr"
   service_name: "docker.radarr"
@@ -72,8 +155,15 @@ lidarr_settings:
   groupname: "lidarr"
   gid: "2060"
   smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'lidarr') | first }}" 
-  smb_dir: "Music"
-  data_dir_name: "music"
+  mnt_dirs:
+    - "/mnt/lidarr"
+    - "/mnt/lidarr/music"
+    - "/mnt/lidarr/downloads"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Music"
+      target: "/mnt/lidarr/music"
+    - source: "//{{ media_nas_name }}/nzb/downloads"
+      target: "/mnt/lidarr/downloads"    
   image_name: "linuxserver/lidarr"
   docker_dir: "srv/docker/lidarr"
   service_name: "docker.lidarr"
@@ -85,23 +175,69 @@ readarr_settings:
   groupname: "readarr"
   gid: "2070"
   smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'readarr') | first }}" 
-  smb_dir: "Library"
-  data_dir_name: "library"
+  mnt_dirs:
+    - "/mnt/readarr"
+    - "/mnt/readarr/library"
+    - "/mnt/readarr/downloads"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Library"
+      target: "/mnt/readarr/library"
+    - source: "//{{ media_nas_name }}/nzb/downloads"
+      target: "/mnt/readarr/downloads"   
   image_name: "linuxserver/readarr:develop"
   docker_dir: "srv/docker/readarr"
   service_name: "docker.readarr"
-  systemd_script: "docker.readarr.service"     
+  systemd_script: "docker.readarr.service"
+  
+overseerr_settings:
+  username: "overseerr"
+  uid: "2040"
+  groupname: "overseerr"
+  gid: "2040"
+  image_name: "linuxserver/overseerr:latest"
+  docker_dir: "srv/docker/overseerr"
+  service_name: "docker.overseerr"
+  systemd_script: "docker.overseerr.service"  
 
-nzbget_credentials: "{{ vault_nzbget_user_credentials }}"
-nzbget_username: "{{ nzbget_credentials.username }}"
-nzbget_password: "{{ nzbget_credentials.password }}"
-nzbget_uid: "2080"
-nzbget_gid: "2080"
-
-prowlarr_credentials: "{{ vault_prowlarr_user_credentials }}"
-prowlarr_username: "{{ prowlarr_credentials.username }}"
-prowlarr_password: "{{ prowlarr_credentials.password }}"
-
-bazarr_credentials: "{{ vault_bazarr_user_credentials }}"
-bazarr_username: "{{ bazarr_credentials.username }}"
-bazarr_password: "{{ bazarr_credentials.password }}"
+ubooquity_settings:
+  username: "ubooquity"
+  uid: "2075"
+  groupname: "ubooquity"
+  gid: "2075"
+  smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'ubooquity') | first }}" 
+  mnt_dirs:
+    - "/mnt/ubooquity"
+    - "/mnt/ubooquity/comics"
+    - "/mnt/ubooquity/ebooks"
+    - "/mnt/ubooquity/raw"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Library/comics"
+      target: "/mnt/ubooquity/comics"
+    - source: "//{{ media_nas_name }}/Library/eBook"
+      target: "/mnt/ubooquity/ebooks"  
+    - source: "//{{ media_nas_name }}/Library/raw"
+      target: "/mnt/ubooquity/raw"        
+  image_name: "linuxserver/ubooquity"
+  docker_dir: "srv/docker/ubooquity"
+  service_name: "docker.ubooquity"
+  systemd_script: "docker.ubooquity.service"  
+  
+nginx_settings:
+  username: "nginx"
+  uid: "3010"
+  groupname: "nginx"
+  gid: "3010"
+  image_name: "linuxserver/nginx"
+  docker_dir: "srv/docker/nginx"
+  service_name: "docker.nginx"
+  systemd_script: "docker.nginx.service"
+  
+heimdall_settings:
+  username: "heimdall"
+  uid: "3020"
+  groupname: "heimdall"
+  gid: "3020"
+  image_name: "linuxserver/heimdall:latest"
+  docker_dir: "srv/docker/heimdall"
+  service_name: "docker.heimdall"
+  systemd_script: "docker.heimdall.service"

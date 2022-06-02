@@ -1,0 +1,13 @@
+[Unit]
+Description=Ubooquity on Docker
+Requires=docker.service mnt-ubooquity-comics.mount mnt-ubooquity-ebooks.mount mnt-ubooquity-raw.mount
+
+[Service]
+User=ubooquity
+Group=ubooquity
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/ubooquity/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/ubooquity/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

@@ -1,8 +1,4 @@
 ---
-- name: include vault
-  include_vars:
-    file: vault.yml
-
 - name: create {{ settings.groupname }} group
   group:
     name: "{{ settings.groupname }}"
@@ -29,19 +25,18 @@
    owner: "{{ settings.username }}"
    group: "{{ settings.groupname }}"
   with_items:
-   - "/mnt/{{ settings.username }}"
-   - "/mnt/{{ settings.username }}/downloads"
-   - "/mnt/{{ settings.username }}/{{ settings.data_dir_name }}"
+   - "{{ settings.mnt_dirs }}"
+  when: settings.mnt_dirs is defined   
 
 - name: add mounts to fstab {{ settings.username }} #MJS - Fix to add replace
   lineinfile:
    path: /etc/fstab
-   line: "{{ item }}"
+   line: "{{ item.source }} {{ item.target }} cifs username={{ settings.smb_creds.username }},password={{ settings.smb_creds.password }},iocharset=utf8,uid={{ settings.uid }},gid={{ settings.gid }},file_mode=0755,dir_mode=0755,vers=3.1.1"
    create: yes
   with_items:
-   - "//{{ media_nas_name }}/{{ settings.smb_dir }} /mnt/{{ settings.username }}/{{ settings.data_dir_name }} cifs username={{ settings.smb_creds.username }},password={{ settings.smb_creds.password }},iocharset=utf8,uid={{ settings.uid }},gid={{ settings.gid }},file_mode=0755,dir_mode=0755,vers=3.1.1"
-   - "//{{ media_nas_name }}/nzb/downloads /mnt/{{ settings.username }}/downloads cifs username={{ settings.smb_creds.username }},password={{ settings.smb_creds.password }},iocharset=utf8,uid={{ settings.uid }},gid={{ settings.gid }},file_mode=0755,dir_mode=0755,vers=3.1.1"
+    - "{{ settings.smb_mounts }}"
   register: fstab
+  when: settings.smb_mounts is defined 
 
 - name: mount all
   command: mount -a

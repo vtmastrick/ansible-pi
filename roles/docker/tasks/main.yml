@@ -1,8 +1,4 @@
 ---
-- name: include vault
-  include_vars:
-    file: vault.yml
-
 - name: install docker
   apt:
     pkg:

@@ -15,6 +15,10 @@ all:
       hosts:
         pidvr:
         pihole:
+    docker_servers:
+      hosts:
+        pidvr:
+        pihole:        
     raspbian_os_servers:
       hosts:
         pidvr:

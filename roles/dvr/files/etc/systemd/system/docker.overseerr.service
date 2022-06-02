@@ -1,0 +1,13 @@
+[Unit]
+Description=Overseerr on Docker
+Requires=docker.service
+
+[Service]
+User=overseerr
+Group=overseerr
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/overseerr/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/overseerr/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

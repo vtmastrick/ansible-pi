@@ -3,9 +3,6 @@
   include_vars:
     file: vault.yml
 
-#- name: setup docker
-#  include: docker.yml
-
 #- name: Create the arr network
 #  docker_network:
 #    name: arr_network
@@ -16,7 +13,6 @@
 - name: install necessary packages
   apt:
     pkg:
-     - gpg
      - samba
      - samba-common-bin
      - cifs-utils
@@ -26,27 +22,26 @@
 #- name: setup nzbget
 #  include: nzbget.yml    
   
-- name: setup *arr
-  include: arr.yml
+- name: setup docker containers
+  include: containers.yml
   vars:
     settings: "{{ settings_object }}"
   loop_control:
     loop_var: settings_object
   with_items:
-#    - "{{ prowlarr_settings }}"
+    - "{{ nginx_settings }}"
+    - "{{ heimdall_settings }}"    
+    - "{{ prowlarr_settings }}"
     - "{{ radarr_settings }}"
     - "{{ lidarr_settings }}"    
     - "{{ sonarr_tv_settings }}"
     - "{{ sonarr_anime_settings }}"
     - "{{ sonarr_ended_settings }}"
     - "{{ readarr_settings }}"        
-#    - "{{ sonarr_bazarr_settings }}"
-
-#- name: setup prowlarr
-#  include: prowlarr.yml
-
-#- name: setup bazarr
-#  include: bazarr.yml
+    - "{{ mylar_settings }}"      
+    - "{{ overseerr_settings }}"    
+    - "{{ bazarr_settings }}"
+    - "{{ ubooquity_settings }}"
 
 ###- name: setup qbt
 ###  include: torrent.yml

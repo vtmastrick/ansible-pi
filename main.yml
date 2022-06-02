@@ -1,21 +1,27 @@
 ---
-- hosts: all #MJS - should be linux
-  become: yes
-  become_method: sudo
-  roles:
+#- hosts: all #MJS - should be linux
+#  become: yes
+#  become_method: sudo
+#  roles:
 #    - global
 
-- hosts: raspbian_os_servers #MJS - should be pi
-  become: yes
-  become_method: sudo
-  roles:
+#- hosts: pi_servers
+#  become: yes
+#  become_method: sudo
+#  roles:
 #    - pi
 
-- hosts: raspbian_os_servers
-  become: yes
-  become_method: sudo
-  roles:
+#- hosts: raspbian_os_servers
+#  become: yes
+#  become_method: sudo
+#  roles:
 #    - raspbian
+
+#  hosts: docker_servers
+#  become: yes
+#  become_method: sudo
+#  roles:
+#    - docker
 
 - hosts: dvr_servers
   become: yes
