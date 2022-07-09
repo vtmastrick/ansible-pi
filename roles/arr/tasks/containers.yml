@@ -48,6 +48,7 @@
   docker_image:
     name: "{{ settings.image_name }}"
     source: pull
+  register: docker_image
 
 - name: create directories for docker compose {{ settings.service_name }}
   file:
@@ -77,5 +78,5 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
-  when: compose_file.changed or service_file.changed
+  when: compose_file.changed or service_file.changed or docker_image.changed
 

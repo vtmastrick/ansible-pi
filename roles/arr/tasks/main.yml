@@ -3,9 +3,9 @@
   include_vars:
     file: vault.yml
 
-#- name: Create the arr network
-#  docker_network:
-#    name: arr_network
+- name: Create the arr network
+  docker_network:
+    name: arr_network
 
 - name: increase swap space
   include: swapspace.yml
@@ -19,8 +19,8 @@
      - smbclient
     state: latest
     
-#- name: setup nzbget
-#  include: nzbget.yml    
+- name: setup nzbget
+  include: nzbget.yml    
   
 - name: setup docker containers
   include: containers.yml
@@ -37,18 +37,12 @@
     - "{{ sonarr_tv_settings }}"
     - "{{ sonarr_anime_settings }}"
     - "{{ sonarr_ended_settings }}"
-    - "{{ readarr_settings }}"        
+#    - "{{ readarr_ebook_settings }}"        
+#    - "{{ readarr_audio_settings }}"        
     - "{{ mylar_settings }}"      
     - "{{ overseerr_settings }}"    
-    - "{{ bazarr_settings }}"
+#    - "{{ bazarr_settings }}"
     - "{{ ubooquity_settings }}"
-
-###- name: setup qbt
-###  include: torrent.yml
-
-###- name: install vpn
-###  include: vpn.yml
-
-###- name: setup firewall
-###  include: firewall.yml
-
+#    - "{{ calibre_settings }}"    
+#    - "{{ calibreweb_settings }}"
+    - "{{ qbittorrent_settings }}"

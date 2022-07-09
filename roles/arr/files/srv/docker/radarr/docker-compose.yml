@@ -10,7 +10,7 @@ services:
       - TZ=America/New_York
     volumes:
       - /srv/docker/radarr/config/:/config
-      - /mnt/radarr/movies:/mnt/radarr/movies #optional
+      - /mnt/radarr/movies:/data/movies #optional
       - /mnt/radarr/downloads:/data/downloads #optional
     ports:
       - 7878:7878

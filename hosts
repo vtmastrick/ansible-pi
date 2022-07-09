@@ -6,22 +6,22 @@ all:
   hosts:
     plexUbuntu:
       ansible_host: plex.local.mastrick.com
-    pidvr:
+    piarr:
       ansible_host: pidvr.local.mastrick.com
     pihole:
       ansible_host: pihole.local.mastrick.com
   children:
     pi_servers:
       hosts:
-        pidvr:
+        piarr:
         pihole:
     docker_servers:
       hosts:
-        pidvr:
-        pihole:        
+        piarr:
+        pihole:
     raspbian_os_servers:
       hosts:
-        pidvr:
+        piarr:
         pihole:
     plexUbuntu_servers:
       hosts:
@@ -31,9 +31,9 @@ all:
     plex_servers:
       hosts:
         plexUbuntu:
-    dvr_servers:
+    arr_servers:
       hosts:
-        pidvr:
+        piarr:
     pi_hole_servers:
       hosts:
         pihole:

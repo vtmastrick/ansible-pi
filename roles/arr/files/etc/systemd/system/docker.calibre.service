@@ -1,0 +1,13 @@
+[Unit]
+Description=Calibre on Docker
+Requires=docker.service mnt-calibre-ebooks.mount
+
+[Service]
+User=calibre
+Group=calibre
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/calibre/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/calibre/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

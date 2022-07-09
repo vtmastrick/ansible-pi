@@ -19,7 +19,6 @@
     regexp: '#CONF_MAXSWAP=\d*$'
     line: "CONF_MAXSWAP={{ conf_maxswap }}"
   register: swapmaxupdate
-  
     
 - name: reboot on apt update
   reboot:

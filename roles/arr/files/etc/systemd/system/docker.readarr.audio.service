@@ -1,0 +1,13 @@
+[Unit]
+Description=Readarr (Audio) on Docker
+Requires=docker.service docker.prowlarr.service docker.nzbget.service mnt-readarr-downloads.mount mnt-readarr-library.mount
+
+[Service]
+User=readarr
+Group=readarr
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/readarr/audio/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/readarr/audio/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

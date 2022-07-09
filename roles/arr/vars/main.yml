@@ -3,21 +3,17 @@ password_salt: "{{ vault_password_salt }}"
 
 samba_users: "{{ vault_samba_users }}"
 
-vpn_credentials: "{{ vault_vpn_credentials }}"
-vpn_config_path_src: "/home/ansible/openvpn/denmark.ovpn"
-vpn_config_path_dest: "/etc/openvpn/pia.conf"
-
 nzbget_smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'nzb') | first }}"
 sonarr_smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'sonarr') | first }}"
 
 conf_swapfactor: 2
-conf_maxswap: 2048
+conf_maxswap: 4096
 
-nzbget_credentials: "{{ vault_nzbget_user_credentials }}"
-nzbget_username: "{{ nzbget_credentials.username }}"
-nzbget_password: "{{ nzbget_credentials.password }}"
-nzbget_uid: "2080"
-nzbget_gid: "2080"
+nzb_settings:
+  username: "nzb"
+  uid: "2080"
+  groupname: "nzb"
+  gid: "2080"  
 
 prowlarr_settings:
   username: "prowlarr"
@@ -169,7 +165,7 @@ lidarr_settings:
   service_name: "docker.lidarr"
   systemd_script: "docker.lidarr.service"   
   
-readarr_settings:
+readarr_ebook_settings:
   username: "readarr"
   uid: "2070"
   groupname: "readarr"
@@ -185,9 +181,29 @@ readarr_settings:
     - source: "//{{ media_nas_name }}/nzb/downloads"
       target: "/mnt/readarr/downloads"   
   image_name: "linuxserver/readarr:develop"
-  docker_dir: "srv/docker/readarr"
-  service_name: "docker.readarr"
-  systemd_script: "docker.readarr.service"
+  docker_dir: "srv/docker/readarr/ebook"
+  service_name: "docker.readarr.ebook"
+  systemd_script: "docker.readarr.ebook.service"
+  
+readarr_audio_settings:
+  username: "readarr"
+  uid: "2070"
+  groupname: "readarr"
+  gid: "2070"
+  smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'readarr') | first }}" 
+  mnt_dirs:
+    - "/mnt/readarr"
+    - "/mnt/readarr/library"
+    - "/mnt/readarr/downloads"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Library"
+      target: "/mnt/readarr/library"
+    - source: "//{{ media_nas_name }}/nzb/downloads"
+      target: "/mnt/readarr/downloads"   
+  image_name: "linuxserver/readarr:develop"
+  docker_dir: "srv/docker/readarr/audio"
+  service_name: "docker.readarr.audio"
+  systemd_script: "docker.readarr.audio.service"
   
 overseerr_settings:
   username: "overseerr"
@@ -222,6 +238,40 @@ ubooquity_settings:
   service_name: "docker.ubooquity"
   systemd_script: "docker.ubooquity.service"  
   
+calibre_settings:
+  username: "calibre"
+  uid: "2077"
+  groupname: "calibre"
+  gid: "2077"
+  smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'calibre') | first }}" 
+  mnt_dirs:
+    - "/mnt/calibre"
+    - "/mnt/calibre/ebooks"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Library/eBook"
+      target: "/mnt/calibre/ebooks"  
+  image_name: "linuxserver/calibre:latest"
+  docker_dir: "srv/docker/calibre"
+  service_name: "docker.calibre"
+  systemd_script: "docker.calibre.service"   
+  
+calibreweb_settings:
+  username: "calibre"
+  uid: "2077"
+  groupname: "calibre"
+  gid: "2077"
+  smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'calibre') | first }}" 
+  mnt_dirs:
+    - "/mnt/calibre"
+    - "/mnt/calibre/ebooks"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/Library/eBook"
+      target: "/mnt/calibre/ebooks"  
+  image_name: "linuxserver/calibre-web:latest"
+  docker_dir: "srv/docker/calibreweb"
+  service_name: "docker.calibreweb"
+  systemd_script: "docker.calibreweb.service"   
+  
 nginx_settings:
   username: "nginx"
   uid: "3010"
@@ -241,3 +291,23 @@ heimdall_settings:
   docker_dir: "srv/docker/heimdall"
   service_name: "docker.heimdall"
   systemd_script: "docker.heimdall.service"
+  
+qbittorrent_settings:
+  username: "torrent"
+  uid: "2085"
+  groupname: "torrent"
+  gid: "2085"
+  smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'torrent') | first }}" 
+  mnt_dirs:
+    - "/mnt/torrent"
+    - "/mnt/torrent/downloads"
+    - "/mnt/torrent/config"
+  smb_mounts:
+    - source: "//{{ media_nas_name }}/torrent/downloads"
+      target: "/mnt/torrent/downloads"  
+    - source: "//{{ media_nas_name }}/torrent/config"
+      target: "/mnt/torrent/config"        
+  image_name: "guillaumedsde/alpine-qbittorrent-openvpn:latest"
+  docker_dir: "srv/docker/alpine-qbittorrent-openvpn"
+  service_name: "docker.alpine-qbittorrent-openvpn"
+  systemd_script: "docker.alpine-qbittorrent-openvpn.service"
