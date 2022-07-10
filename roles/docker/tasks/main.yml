@@ -1,0 +1,12 @@
+---
+- name: install docker
+  apt:
+    pkg:
+      - docker
+      - docker-compose
+  register: aptupdate
+
+- name: reboot on apt update
+  reboot:
+    test_command: whoami
+  when: aptupdate.changed

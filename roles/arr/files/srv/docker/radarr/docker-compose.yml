@@ -1,0 +1,25 @@
+---
+version: "2.1"
+services:
+  sonarr:
+    image: lscr.io/linuxserver/radarr
+    container_name: radarr
+    environment:
+      - PUID=2050
+      - PGID=2050
+      - TZ=America/New_York
+    volumes:
+      - /srv/docker/radarr/config/:/config
+      - /mnt/radarr/movies:/data/movies #optional
+      - /mnt/radarr/downloads:/data/downloads #optional
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1    
+
+networks:
+  default:
+    external:
+      name: arr_network

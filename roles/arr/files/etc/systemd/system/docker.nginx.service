@@ -1,0 +1,13 @@
+[Unit]
+Description=nginx on Docker
+Requires=docker.service
+
+[Service]
+User=nginx
+Group=nginx
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/nginx/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/nginx/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,24 @@
+---
+version: "2.1"
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=2040
+      - PGID=2040
+      - TZ=America/New_York
+    volumes:
+      - /srv/docker/overseerr/config/:/config
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1    
+
+networks:
+  default:  
+    external:  
+      name: arr_network
+

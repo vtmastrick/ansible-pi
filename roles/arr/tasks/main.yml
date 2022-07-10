@@ -1,0 +1,48 @@
+---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: Create the arr network
+  docker_network:
+    name: arr_network
+
+- name: increase swap space
+  include: swapspace.yml
+
+- name: install necessary packages
+  apt:
+    pkg:
+     - samba
+     - samba-common-bin
+     - cifs-utils
+     - smbclient
+    state: latest
+    
+- name: setup nzbget
+  include: nzbget.yml    
+  
+- name: setup docker containers
+  include: containers.yml
+  vars:
+    settings: "{{ settings_object }}"
+  loop_control:
+    loop_var: settings_object
+  with_items:
+    - "{{ nginx_settings }}"
+    - "{{ heimdall_settings }}"    
+    - "{{ prowlarr_settings }}"
+    - "{{ radarr_settings }}"
+    - "{{ lidarr_settings }}"    
+    - "{{ sonarr_tv_settings }}"
+    - "{{ sonarr_anime_settings }}"
+    - "{{ sonarr_ended_settings }}"
+#    - "{{ readarr_ebook_settings }}"        
+#    - "{{ readarr_audio_settings }}"        
+    - "{{ mylar_settings }}"      
+    - "{{ overseerr_settings }}"    
+#    - "{{ bazarr_settings }}"
+    - "{{ ubooquity_settings }}"
+#    - "{{ calibre_settings }}"    
+#    - "{{ calibreweb_settings }}"
+    - "{{ qbittorrent_settings }}"

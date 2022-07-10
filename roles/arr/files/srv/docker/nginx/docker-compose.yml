@@ -1,0 +1,25 @@
+---
+version: "2.1"
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/nginx
+    container_name: nginx
+    environment:
+      - PUID=3010
+      - PGID=3010
+      - TZ=America/New_York
+    volumes:
+      - /srv/docker/nginx/config/:/config
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1    
+
+networks:
+  default:  
+    external:  
+      name: arr_network
+

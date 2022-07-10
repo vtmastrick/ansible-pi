@@ -1,0 +1,13 @@
+[Unit]
+Description=Alpine Qbittorrent OpenVPN on Docker
+Requires=docker.service mnt-torrent-mount
+
+[Service]
+User=torrent
+Group=torrent
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/alpine-qbittorrent-openvpn/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/alpine-qbittorrent-openvpn/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

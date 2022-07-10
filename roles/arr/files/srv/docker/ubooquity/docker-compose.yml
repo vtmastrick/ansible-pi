@@ -1,0 +1,28 @@
+---
+version: "2.1"
+services:
+  ubooquity:
+    image: lscr.io/linuxserver/ubooquity:latest
+    container_name: ubooquity
+    environment:
+      - PUID=2075
+      - PGID=2075
+      - TZ=America/New_York
+      - MAXMEM=1024
+    volumes:
+      - /srv/docker/ubooquity/config:/config
+      - /mnt/ubooquity/eBooks:/books
+      - /mnt/ubooquity/comics:/comics
+      - /mnt/ubooquity/raw:/files
+    ports:
+      - 2202:2202
+      - 2203:2203
+    restart: unless-stopped
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1         
+
+networks:
+  default:
+    external:
+      name: arr_network
