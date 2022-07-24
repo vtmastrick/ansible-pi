@@ -3,8 +3,8 @@ Description=nzbget on Docker
 Requires=docker.service network.target mnt-nzbget.mount
 
 [Service]
-User=nzbget
-Group=nzbget
+User=nzb
+Group=nzb
 Restart=always
 ExecStart=/usr/bin/docker-compose -f /srv/docker/nzbget/docker-compose.yml up
 ExecStop=/usr/bin/docker-compose -f /srv/docker/nzbget/docker-compose.yml down
