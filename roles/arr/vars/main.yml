@@ -277,7 +277,7 @@ nginx_settings:
   uid: "3010"
   groupname: "nginx"
   gid: "3010"
-  image_name: "linuxserver/nginx"
+#  image_name: "nginx:latest"
   docker_dir: "srv/docker/nginx"
   service_name: "docker.nginx"
   systemd_script: "docker.nginx.service"

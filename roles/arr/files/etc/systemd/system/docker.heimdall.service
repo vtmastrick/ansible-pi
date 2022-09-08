@@ -1,6 +1,6 @@
 [Unit]
 Description=Heimdall on Docker
-Requires=docker.service docker.nginx.service
+Requires=docker.service
 
 [Service]
 User=heimdall

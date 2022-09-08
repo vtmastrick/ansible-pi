@@ -1,22 +1,32 @@
 ---
 version: "2.1"
 services:
-  prowlarr:
-    image: lscr.io/linuxserver/nginx
+  nginx:
+    image: nginx:latest
     container_name: nginx
     environment:
       - PUID=3010
       - PGID=3010
       - TZ=America/New_York
     volumes:
-      - /srv/docker/nginx/config/:/config
+      - /srv/docker/nginx/config/:/etc/nginx/conf.d/:ro
+      - /srv/docker/nginx/certbot/www/:/var/www/certbot/:ro
+      - /srv/docker/nginx/certbot/conf/:/etc/nginx/ssl/:ro
     ports:
       - 80:80
       - 443:443
     restart: unless-stopped
     dns:
       - 10.10.125.87
-      - 1.1.1.1    
+      - 1.1.1.1   
+  certbot:
+    image: certbot/certbot:arm64v8-latest
+    volumes:
+      - /srv/docker/nginx/certbot/www/:/var/www/certbot/:rw
+      - /srv/docker/nginx/certbot/conf/:/etc/letsencrypt/:rw
+    dns:
+      - 10.10.125.87
+      - 1.1.1.1
 
 networks:
   default:  

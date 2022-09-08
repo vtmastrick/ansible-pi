@@ -1,7 +1,7 @@
 ---
 version: "2.1"
 services:
-  prowlarr:
+  heimdall:
     image: lscr.io/linuxserver/heimdall:latest
     container_name: heimdall
     environment:
