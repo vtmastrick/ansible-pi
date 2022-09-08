@@ -19,8 +19,28 @@
      - smbclient
     state: latest
     
-- name: setup nzbget
-  include: nzbget.yml    
+ - name: setup nzbget
+   include: nzbget.yml    
+
+- name: nginx directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: "3010"
+   group: "3010"
+  with_items:
+   - '/srv/docker/nginx'
+   - '/srv/docker/nginx/config'
+   - '/srv/docker/nginx/certbot/conf'
+   - '/srv/docker/nginx/certbot/www'
+  
+- name: nginx prep
+  copy:
+    src: srv/docker/nginx/config/nginx.conf
+    dest: /srv/docker/nginx/config/nginx.conf
+    owner: "3010"
+    group: "3010"
+    remote_src: no    
   
 - name: setup docker containers
   include: containers.yml
@@ -37,12 +57,14 @@
     - "{{ sonarr_tv_settings }}"
     - "{{ sonarr_anime_settings }}"
     - "{{ sonarr_ended_settings }}"
-#    - "{{ readarr_ebook_settings }}"        
-#    - "{{ readarr_audio_settings }}"        
     - "{{ mylar_settings }}"      
     - "{{ overseerr_settings }}"    
-#    - "{{ bazarr_settings }}"
     - "{{ ubooquity_settings }}"
+    - "{{ qbittorrent_settings }}"
+
+#    - "{{ bazarr_settings }}"    
+#    - "{{ readarr_ebook_settings }}"        
+#    - "{{ readarr_audio_settings }}"        
 #    - "{{ calibre_settings }}"    
 #    - "{{ calibreweb_settings }}"
-    - "{{ qbittorrent_settings }}"
+

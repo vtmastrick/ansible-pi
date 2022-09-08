@@ -8,6 +8,7 @@ Group=nzb
 Restart=always
 ExecStart=/usr/bin/docker-compose -f /srv/docker/nzbget/docker-compose.yml up
 ExecStop=/usr/bin/docker-compose -f /srv/docker/nzbget/docker-compose.yml down
+Type=simple
 
 [Install]
 WantedBy=default.target

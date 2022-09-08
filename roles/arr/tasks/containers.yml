@@ -49,6 +49,7 @@
     name: "{{ settings.image_name }}"
     source: pull
   register: docker_image
+  when: settings.image_name is defined 
 
 - name: create directories for docker compose {{ settings.service_name }}
   file:

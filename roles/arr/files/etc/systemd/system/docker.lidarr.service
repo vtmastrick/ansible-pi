@@ -1,6 +1,6 @@
 [Unit]
 Description=Lidarr on Docker
-Requires=docker.service docker.prowlarr.service docker.nzbget.service mnt-lidarr-downloads.mount mnt-lidarr-music.mount
+Requires=docker.service mnt-lidarr-downloads.mount mnt-lidarr-music.mount
 
 [Service]
 User=lidarr
