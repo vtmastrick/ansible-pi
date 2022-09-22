@@ -238,23 +238,6 @@ ubooquity_settings:
   service_name: "docker.ubooquity"
   systemd_script: "docker.ubooquity.service"  
   
-calibre_settings:
-  username: "calibre"
-  uid: "2077"
-  groupname: "calibre"
-  gid: "2077"
-  smb_creds: "{{ samba_users | selectattr('username', 'equalto', 'calibre') | first }}" 
-  mnt_dirs:
-    - "/mnt/calibre"
-    - "/mnt/calibre/ebooks"
-  smb_mounts:
-    - source: "//{{ media_nas_name }}/Library/eBook"
-      target: "/mnt/calibre/ebooks"  
-  image_name: "linuxserver/calibre:latest"
-  docker_dir: "srv/docker/calibre"
-  service_name: "docker.calibre"
-  systemd_script: "docker.calibre.service"   
-  
 calibreweb_settings:
   username: "calibre"
   uid: "2077"
@@ -282,15 +265,15 @@ nginx_settings:
   service_name: "docker.nginx"
   systemd_script: "docker.nginx.service"
   
-heimdall_settings:
-  username: "heimdall"
-  uid: "3020"
-  groupname: "heimdall"
-  gid: "3020"
-  image_name: "linuxserver/heimdall:latest"
-  docker_dir: "srv/docker/heimdall"
-  service_name: "docker.heimdall"
-  systemd_script: "docker.heimdall.service"
+homer_settings:
+  username: "homer"
+  uid: "3025"
+  groupname: "homer"
+  gid: "3025"
+  image_name: "b4bz/homer"
+  docker_dir: "srv/docker/homer"
+  service_name: "docker.homer"
+  systemd_script: "docker.homer.service"
   
 qbittorrent_settings:
   username: "torrent"
