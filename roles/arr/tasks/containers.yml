@@ -44,12 +44,12 @@
     warn: no
   when: fstab.changed 
 
-- name: get docker image {{ settings.image_name }} #MJS - need to update before ansible 2.12
-  docker_image:
-    name: "{{ settings.image_name }}"
-    source: pull
-  register: docker_image
-  when: settings.image_name is defined 
+#- name: get docker image {{ settings.image_name }} #MJS - need to update before ansible 2.12
+#  docker_image:
+#    name: "{{ settings.image_name }}"
+#    source: pull
+#  register: docker_image
+#  when: settings.image_name is defined 
 
 - name: create directories for docker compose {{ settings.service_name }}
   file:
@@ -58,10 +58,10 @@
     owner: "{{ settings.uid }}"
     group: "{{ settings.gid }}"
 
-- name: copy docker-compose file for {{ settings.service_name }}
+- name: copy files to {{ settings.docker_dir }} for {{ settings.service_name }}
   copy: 
-    src: "{{ settings.docker_dir }}/docker-compose.yml"
-    dest: "/{{ settings.docker_dir }}/docker-compose.yml"
+    src: "{{ settings.docker_dir }}"
+    dest: "/srv/docker"
     owner: "{{ settings.uid }}"
     group: "{{ settings.gid }}"
     remote_src: no

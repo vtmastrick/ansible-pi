@@ -1,0 +1,13 @@
+[Unit]
+Description=Homer on Docker
+Requires=docker.service
+
+[Service]
+User=homer
+Group=homer
+Restart=always
+ExecStart=/usr/bin/docker-compose -f /srv/docker/homer/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /srv/docker/homer/docker-compose.yml down
+
+[Install]
+WantedBy=default.target

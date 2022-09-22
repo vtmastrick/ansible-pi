@@ -19,8 +19,8 @@
      - smbclient
     state: latest
     
- - name: setup nzbget
-   include: nzbget.yml    
+- name: setup nzbget
+  include: nzbget.yml    
 
 - name: nginx directories
   file:
@@ -49,18 +49,20 @@
   loop_control:
     loop_var: settings_object
   with_items:
-    - "{{ nginx_settings }}"
-    - "{{ heimdall_settings }}"    
-    - "{{ prowlarr_settings }}"
-    - "{{ radarr_settings }}"
-    - "{{ lidarr_settings }}"    
-    - "{{ sonarr_tv_settings }}"
-    - "{{ sonarr_anime_settings }}"
-    - "{{ sonarr_ended_settings }}"
-    - "{{ mylar_settings }}"      
-    - "{{ overseerr_settings }}"    
-    - "{{ ubooquity_settings }}"
-    - "{{ qbittorrent_settings }}"
+
+#    - "{{ nginx_settings }}"
+#    - "{{ heimdall_settings }}"
+    - "{{ homer_settings }}"    
+#    - "{{ prowlarr_settings }}"
+#    - "{{ radarr_settings }}"
+#    - "{{ lidarr_settings }}"    
+#    - "{{ sonarr_tv_settings }}"
+#    - "{{ sonarr_anime_settings }}"
+#    - "{{ sonarr_ended_settings }}"
+#    - "{{ mylar_settings }}"      
+#    - "{{ overseerr_settings }}"    
+#    - "{{ ubooquity_settings }}"
+#    - "{{ qbittorrent_settings }}"
 
 #    - "{{ bazarr_settings }}"    
 #    - "{{ readarr_ebook_settings }}"        
