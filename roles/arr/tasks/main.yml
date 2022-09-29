@@ -18,29 +18,32 @@
      - cifs-utils
      - smbclient
     state: latest
-    
-- name: setup nzbget
-  include: nzbget.yml    
 
-- name: nginx directories
-  file:
-   path: "{{ item }}"
-   state: directory
-   owner: "3010"
-   group: "3010"
-  with_items:
-   - '/srv/docker/nginx'
-   - '/srv/docker/nginx/config'
-   - '/srv/docker/nginx/certbot/conf'
-   - '/srv/docker/nginx/certbot/www'
+- name: setup backup process
+  include: backup.yml    
+    
+# - name: setup nzbget
+#  include: nzbget.yml    
+
+# - name: nginx directories
+#  file:
+#   path: "{{ item }}"
+#   state: directory
+#   owner: "3010"
+#   group: "3010"
+#  with_items:
+#   - '/srv/docker/nginx'
+#   - '/srv/docker/nginx/config'
+#   - '/srv/docker/nginx/certbot/conf'
+#   - '/srv/docker/nginx/certbot/www'
   
-- name: nginx prep
-  copy:
-    src: srv/docker/nginx/config/nginx.conf
-    dest: /srv/docker/nginx/config/nginx.conf
-    owner: "3010"
-    group: "3010"
-    remote_src: no    
+# - name: nginx prep
+#  copy:
+#    src: srv/docker/nginx/config/nginx.conf
+#    dest: /srv/docker/nginx/config/nginx.conf
+#    owner: "3010"
+#    group: "3010"
+#    remote_src: no    
   
 - name: setup docker containers
   include: containers.yml
@@ -52,7 +55,7 @@
 
 #    - "{{ nginx_settings }}"
 #    - "{{ heimdall_settings }}"
-    - "{{ homer_settings }}"    
+#    - "{{ homer_settings }}"    
 #    - "{{ prowlarr_settings }}"
 #    - "{{ radarr_settings }}"
 #    - "{{ lidarr_settings }}"    
@@ -60,7 +63,7 @@
 #    - "{{ sonarr_anime_settings }}"
 #    - "{{ sonarr_ended_settings }}"
 #    - "{{ mylar_settings }}"      
-#    - "{{ overseerr_settings }}"    
+    - "{{ overseerr_settings }}"    
 #    - "{{ ubooquity_settings }}"
 #    - "{{ qbittorrent_settings }}"
 
