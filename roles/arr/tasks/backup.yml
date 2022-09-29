@@ -1,0 +1,55 @@
+---
+- name: include vault
+  include_vars:
+    file: vault.yml
+
+- name: create arrbackup group
+  group:
+    name: "{{ arrbackup_settings.groupname }}"
+    gid: "{{ arrbackup_settings.gid }}"
+    state: present
+
+- name: create arrbackup user
+  user: 
+    name: "{{ arrbackup_settings.username }}"
+    uid: "{{ arrbackup_settings.uid }}"
+    state: present
+    group: "{{ arrbackup_settings.gid }}"
+
+- name: add "{{ arrbackup_settings.username }}" to group nginx
+  user:
+    name: "{{ arrbackup_settings.username }}"
+    groups: nginx
+    append: yes
+
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   owner: "{{ arrbackup_settings.uid }}"
+   group: "{{ arrbackup_settings.gid }}"
+  with_items:
+   - '/mnt/arrbackup'
+
+- name: add mounts to fstab
+  lineinfile:
+   path: /etc/fstab
+   line: "{{ item }}"
+   create: yes
+  with_items:
+   - "//{{ media_nas_name }}/backup_arr /mnt/arrbackup cifs username={{ arrbackup_smb_creds.username }},password={{ arrbackup_smb_creds.password }},iocharset=utf8,uid={{ arrbackup_settings.uid }},gid={{ arrbackup_settings.gid }},file_mode=0755,dir_mode=0755,vers=3.1.1"
+
+- name: mount all
+  command: mount -a
+  args:
+    warn: no
+    
+- name: add rsync jobs to cron
+  cron:
+    name: "{{ item.name }}"
+    hour: "{{ item.hour }}"
+    minute: "{{ item.minute }}"
+    job: "{{ item.job }}"
+    user: "{{ arrbackup_settings.username }}"
+  with_items:
+    - "{{ arrbackup_settings.cron_jobs }}"
