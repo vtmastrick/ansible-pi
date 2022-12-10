@@ -26,4 +26,4 @@
     state: present
     mode: 0440
     create: yes
-    validate: 'visudo -cf %s'
+    validate: '/usr/sbin/visudo -cf %s'

@@ -1,9 +1,9 @@
 ---
-- hosts: all #MJS - should be linux
+- hosts: linux_servers #MJS - should be linux
   become: yes
   become_method: sudo
   roles:
-    - global
+    - linux
 
 - hosts: pi_servers
   become: yes

@@ -1,23 +1,4 @@
 ---
-- name: remove packages
-  apt:
-    pkg:
-      - rpimonitor
-    state: absent
-    update_cache: false
-
-- name: remove key for rpi monitor
-  apt_key:
-    id: 2C0D3C0F
-    keyserver: keyserver.ubuntu.com
-    state: absent
-
-- name: remove rpi monitor repo
-  apt_repository:
-    repo: deb http://giteduberger.fr rpimonitor/
-    state: absent
-    filename: rpimonitor
-
 - name: Cleanup apt
   apt:
     autoclean: yes

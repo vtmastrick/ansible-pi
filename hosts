@@ -11,6 +11,11 @@ all:
     pihole:
       ansible_host: pihole.local.mastrick.com
   children:
+    linux_servers:
+      hosts:
+        piarr:
+        pihole:
+        plexUbuntu:
     pi_servers:
       hosts:
         piarr:
